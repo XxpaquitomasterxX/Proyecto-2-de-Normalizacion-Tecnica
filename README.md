@@ -1,1 +1,1 @@
-# Proyecto-2-de-Normalizaci-n-T-cnica
+# Proyecto-2-de-Normalizacion-Tecnica
