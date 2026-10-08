@@ -1,0 +1,16 @@
+E1=30985 kWh  T_CS=50.7  T_CO=59.7  TDER=63893
+Etapas 1-3 (sin IVA) = 259021 CRC; ICE-LEE = 68175 CRC; base regulatoria = 327196 CRC; etapa 4 (contingencia) = 79803 CRC
+A: T-CS sin tarifa de acceso           precio=  50.7  ahorro1= 1.33 MCRC (  2634 USD)  PB=10  VAN=  0.81 MCRC (   1609 USD)  LCOE= 45.8 CRC/kWh
+B: hipotético T-CS monómica + acceso   precio=  59.8  ahorro1= 1.58 MCRC (  3133 USD)  PB=8  VAN=  3.62 MCRC (   7167 USD)  LCOE= 45.2 CRC/kWh
+C: T-CO sin tarifa de acceso           precio=  59.7  ahorro1= 1.58 MCRC (  3128 USD)  PB=8  VAN=  3.39 MCRC (   6716 USD)  LCOE= 45.8 CRC/kWh
+
+Sensibilidad del retorno simple (años) al CAPEX:
+0.9 [8, 7, 7] [39.3, 38.6, 39.3]
+1.1 [10, 8, 8] [45.8, 45.2, 45.8]
+1.3 [11, 10, 10] [52.4, 51.8, 52.4]
+1.5 [15, 11, 11] [59.0, 58.4, 59.0]
+
+Contingencia: reinspección (etapa 4) si la etapa 3 resulta infructuosa:
+A: T-CS sin tarifa de acceso           PB=10  VAN=  0.73 MCRC  LCOE= 46.1 CRC/kWh
+B: hipotético T-CS monómica + acceso   PB=8  VAN=  3.54 MCRC  LCOE= 45.5 CRC/kWh
+C: T-CO sin tarifa de acceso           PB=8  VAN=  3.31 MCRC  LCOE= 46.1 CRC/kWh

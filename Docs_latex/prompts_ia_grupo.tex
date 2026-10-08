@@ -1,0 +1,74 @@
+% Fragmento para \input{} desde main.tex (sin preámbulo propio).
+% Bitácora de Prompts - Proyecto No. 2 (versión preliminar)
+
+\subsection*{Declaración de uso de herramientas de IA}
+El grupo usó asistentes de inteligencia artificial (Claude, de Anthropic, incluido su modo Cowork con acceso a la carpeta del proyecto) como apoyo en cuatro tareas: (1) orientación para obtener y leer los planos as-built; (2) redacción y revisión de borradores del documento en \LaTeX{}; (3) generación de los programas de cálculo (\texttt{calc/*.py}) y de las fuentes TikZ/Python de las láminas FV-00 a FV-04; y (4) revisiones cruzadas contra el enunciado, el NEC 2020 y las fichas técnicas, incluida la revisión final de planos, cálculos y documento de esta versión. Toda cifra, artículo normativo y dato de equipo incluido en el documento se contrastó con la fuente primaria citada (texto del NEC, reglamentos, portal y tarifas del ICE, fichas y manuales de los fabricantes, planos as-built). Las decisiones de diseño, la selección del emplazamiento y la responsabilidad sobre el contenido son del grupo.
+
+% Sesión 1 transcrita textualmente del registro original incluido en la primera versión del documento (main.pdf, anexo A).
+% Prompts de otras sesiones que el grupo debe pegar aquí si los tiene en su historial: ver comentario al final del archivo.
+
+\subsection*{Sesión 1: Planteamiento, obtención de planos y primera versión}
+
+\begin{enumerate}
+    \item ``Vamos a hacer este proyecto, primero, quiero que analicemos posibles estructuras.''
+    \item ``Bueno, haz todo el proyecto, elige el lugar y haz todos los cálculos, busca los planos y dime si necesitas algo que sumamente yo deba conseguir.''
+    \item ``Ok dime que puedo poner en el correo para pedir los planos y dime que cosas recordar hacer enlistados.''
+    \item ``Puedes ver archivos dwg, porque me mandaron un zip con todos los planos pero no sé si puedas analizarlos.''
+    \item ``Ok estoy en mi computadora, como descargo AutoCAD con mis licencias de la universidad Tecnológico de Costa Rica y abrimos los planos.''
+    \item ``Todos los archivos que abro me tiran esto, no sé qué tanto nos afecta y qué podemos hacer.'' (con una captura del mensaje de error)
+    \item ``No se ve bien los planos.''
+    \item ``No me sale exactamente Autodesk Civil 3D 2027, así que no sé si alguno nos funciona o estoy buscando en el lugar equivocado.''
+    \item ``¿Es este?''
+    \item ``Abrí en Civil 3D el láminas P y me tira esto, además, sigue viéndose parecido.''
+    \item ``Ok de momento, ¿qué intento imprimir en PDF?''
+    \item ``No veo las que me mencionas, las S pues sí pero me mandaron láminas que inician con X,T,S,P de evacuación, mecánicas y otras, ¿revisaste el ZIP o será que tienen otro nombre?''
+    \item ``Ya tengo los 3 archivos abiertos en el CAD.''
+    \item ``Ok quiero que analices el primer resultado, creo que se ve todo pero hay que enfocar en las páginas entonces quiero que analices bien cada página del PDF.''
+    \item ``Ok cuando abro algunos me tira esto, por ejemplo este es el S01.''
+    \item ``Ok se ve completo, ¿prefieres un PDF con todos los planos hasta el S10 o uno por plano?''
+    \item ``Si ya tienes todo con esto, haz todo el proyecto en LaTeX, dime si necesitas más.''
+\end{enumerate}
+
+\subsection*{Sesión 2: Revisión contra el enunciado}
+
+\begin{enumerate}[resume]
+    \item ``Hola, basado en las fuentes que te di, quiero que revises el progreso actual de lo que hemos redactado en nuestro archivo main.pdf. Dame un análisis de lo que crees que le hace falta al documento. Además, tenemos una carpeta con los archivos .dwg del edificio; basándote en: Proyecto\_2\_Instalaciones\_Fotovoltaicas\_Costa\_Rica.pdf, dime qué puntos de las especificaciones nos faltan por cubrir.''
+\end{enumerate}
+
+\subsection*{Sesión 3: Desarrollo de láminas y revisión cruzada}
+
+\begin{enumerate}[resume]
+    \item ``Ya terminamos de diseñar las láminas FV-01 y FV-02 y las exportamos. Te describo los bloques y notas que incluimos en ellas. ¿Podrías ayudarnos a revisarlas para verificar si cumplen con las normativas vigentes, si falta alguna nota técnica importante, y hacer una revisión cruzada para asegurar que se alineen tanto con el Código Eléctrico de Costa Rica como con el enunciado del proyecto?''
+\end{enumerate}
+
+\subsection*{Sesión 4: Verificación, revisión final y guía de entrega}
+
+\begin{enumerate}[resume]
+    \item ``Ya redactamos la totalidad del documento en LaTeX. Te voy a compartir un par de secciones clave para que me des tu opinión sobre la coherencia técnica, redacción y si los términos eléctricos están usados de manera correcta.''
+    \item ``Realizamos los cálculos de dimensionamiento del inversor y de protecciones. Nuestros resultados son los siguientes:'' (a continuación se pegaron los resultados de esa versión) ``¿Podrías guiarme para verificar si la metodología de cálculo que aplicamos es la correcta según la normativa?''
+    \item ``Acabamos de hacer la última revisión de superposición de textos en las láminas y quedaron listas. ¿Cuáles son los lineamientos estándar para presentar y organizar el entregable final (archivos .tex, los planos .dwg, y los reportes PDF) en un repositorio de GitHub para un proyecto de ingeniería?''
+    \item ``Finalmente, dame un check-list rápido de los errores más comunes que los estudiantes cometen en la entrega de proyectos de instalaciones fotovoltaicas para hacer una última verificación por nuestra cuenta antes de enviarlo.''
+\end{enumerate}
+
+\subsection*{Sesión 5: Revisión cruzada de la versión V5 y versión V6 (Claude, modo Cowork)}
+
+\begin{enumerate}[resume]
+    \item ``Por favor, acompáñanos en la revisión de la carpeta proyecto\_V5. ¿Podrías guiarnos contrastando nuestro avance con las normativas y el enunciado del proyecto, para ayudarnos a identificar posibles puntos de mejora o elementos que nos hagan falta considerar para la versión final del proyecto?''
+    \item ``Basado en las observaciones anteriores, ¿qué recomendaciones técnicas nos darías para solucionar estos hallazgos? Queremos usar tu guía para redactar los ajustes e incorporarlos por nuestra cuenta en la versión 6 del documento.''
+\end{enumerate}
+Cambios propuestos por la herramienta e incorporados en V6 (cada uno con su fuente citada en el documento): corrección de la longitud máxima de string (25 optimizadores en 208~V, ficha S650B), eliminación del SPD-DC externo (integrado en el SE10KUS según su ficha), criterio de SolarEdge para módulos bifaciales (nota de aplicación v1.5), justificación de los conductores secundarios de TS-01 según NEC 240.21(C)(6), medidor del ICE y leyendas en las láminas, y actualización de fuentes oficiales.
+
+\subsection*{Sesión 6: Revisión final de planos, cálculos y documento (Claude, modo Cowork)}
+
+\begin{enumerate}[resume]
+    \item ``Solicitamos tu asistencia para verificar los planos que hemos generado en la carpeta Proyecto\_V7. ¿Podrías revisarlos y orientarnos sobre si cumplen adecuadamente con las normas eléctricas y de seguridad de Costa Rica para nosotros hacer los ajustes necesarios? Asimismo, apóyanos revisando nuestra metodología en los cálculos eléctricos y la redacción de la totalidad del documento; si notas alguna inconsistencia con la normativa o el enunciado, indícanos cómo podríamos corregirla. Dado que no es posible obtener más datos del edificio, ¿qué supuestos técnicos de diseño nos recomiendas asumir de forma coherente para dejarlos por escrito? Finalmente, danos tus recomendaciones para organizar y consolidar la carpeta Proyecto\_preliminar de modo que nos sirva como nuestra versión casi final.''
+\end{enumerate}
+Cambios propuestos por la herramienta e incorporados (cada uno verificado con la fuente citada en el documento): caso de cálculo con el azimut real de 60° y las sombras de los árboles; fuerza en las abrazaderas compartidas (MidGrab) y carga última de 2,5~kN; orejetas de tierra UL 2703 por módulo, porque el manual y las instrucciones del PVKIT difieren en el fusible máximo admitido; corriente de falla en el IFV y el TFV y SCCR del IFV; ubicación de los TC del medidor SolarEdge; verificación de NEC 450.3(B) y de la ocupación de la EMT de C-AC1/2; evaluación simplificada del riesgo por rayo (NFPA 780, Anexo L); rótulo 690.31(D)(2); flecha de norte real en FV-00 y FV-01; altura del pasamuro en FV-02; y el cuadro de supuestos de diseño que sustituye a los datos que no fue posible obtener del edificio.
+
+\subsection*{Sesión 7: Corrección de errores de la versión final (Claude, modo Cowork)}
+
+\begin{enumerate}[resume]
+    \item ``Hemos identificado una serie de observaciones y detalles pendientes en nuestra versión final. ¿Podrías revisar los hallazgos detallados en este documento y sugerirnos cómo deberíamos abordarlos técnica y normativamente, para que nosotros apliquemos las correcciones correspondientes?'' (se adjuntó el archivo \texttt{errores\_version\_final.tex}, con seis observaciones E1--E6).
+\end{enumerate}
+Cambios incorporados (cada uno verificado contra la fuente oficial citada en el documento): tarifas del pliego del ICE de 2026 en lugar de las de 2025 ajustadas (T-CS ₡50,72/kWh y T-CO ₡59,67/kWh), con el modelo económico recalculado; escenario B reformulado como sensibilidad hipotética coherente con la tarifa monómica; análisis económico en una sola base, antes de impuestos; eliminación de la clasificación ``obra menor'' del trámite municipal; actualización de las referencias tarifarias (RED julio 2026, pliego 2026, comunicado de ARESEP) y redacción de la conclusión sobre la cubierta condicionada al dictamen estructural.
+

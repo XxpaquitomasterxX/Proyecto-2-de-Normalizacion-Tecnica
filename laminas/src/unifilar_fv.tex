@@ -1,0 +1,85 @@
+% Lámina FV-03: diagrama unifilar completo (se incluye con \input en FV-03.tex)
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex,font=\scriptsize,
+  eq/.style={draw,thick,rounded corners=2pt,align=center,fill=white,inner sep=3pt},
+  ex/.style={draw,thick,dashed,gray!70!black,rounded corners=2pt,align=center,fill=gray!8,inner sep=3pt},
+  cab/.style={font=\tiny,align=left,fill=white,inner sep=1pt},
+  dcw/.style={very thick,orange!80!black},
+  acw/.style={very thick},
+  exw/.style={very thick,gray!70!black},
+  gnd/.style={thick,green!50!black,dashed}]
+
+% ---------------- STRINGS ----------------
+\foreach \s/\y/\c in {1/13.2/blue!60!black,2/10.4/blue!60!black,3/5.2/green!45!black,4/2.4/green!45!black}{
+  \node[eq,draw=\c,minimum width=3.6cm,minimum height=1.5cm] (S\s) at (1.5,\y)
+   {\textbf{String S\s}\\9 $\times$ CS6W-580TB-AG\\9 $\times$ SolarEdge S650B\\\SI{5.22}{\kWp}};
+}
+\node[font=\tiny,align=center] at (1.8,15.1) {Arreglo en cubierta (FV-01)\\RSD a nivel de módulo: \SI{1}{\volt}/optimizador};
+
+% ---------------- INVERSORES ----------------
+\node[eq,minimum width=3.4cm,minimum height=3.6cm] (INV1) at (9.2,11.8)
+ {\textbf{INV-1}\\SolarEdge SE10KUS\\\SI{10}{\kilo\watt}, 208Y/120~V, 3$\phi$\\\SI{27.8}{\ampere} AC\\Desconexión DC integrada\\AFCI (UL 1699B)\\Iniciador RSD (PVRSS)\\IEEE 1547-2018 / UL 1741 SB\\SPD tipo 2 DC/AC y fusibles\\DC de 25 A integrados};
+\node[eq,minimum width=3.4cm,minimum height=3.6cm] (INV2) at (9.2,3.8)
+ {\textbf{INV-2}\\SolarEdge SE10KUS\\\SI{10}{\kilo\watt}, 208Y/120~V, 3$\phi$\\\SI{27.8}{\ampere} AC\\Desconexión DC integrada\\AFCI (UL 1699B)\\Iniciador RSD (PVRSS)\\IEEE 1547-2018 / UL 1741 SB\\SPD tipo 2 DC/AC y fusibles\\DC de 25 A integrados};
+
+\draw[dcw,->] (S1.east) -- node[cab,above,pos=0.45]{C-DC1: 2\#10 PV + \#10 EGC} (S1.east -| INV1.west) ;
+\draw[dcw,->] (S2.east) -- node[cab,above,pos=0.45]{C-DC2: 2\#10 PV + \#10 EGC} (S2.east -| INV1.west);
+\draw[dcw,->] (S3.east) -- node[cab,above,pos=0.45]{C-DC3: 2\#10 PV + \#10 EGC} (S3.east -| INV2.west);
+\draw[dcw,->] (S4.east) -- node[cab,above,pos=0.45]{C-DC4: 2\#10 PV + \#10 EGC} (S4.east -| INV2.west);
+\node[cab,align=center] at (5.6,8.0) {DC: EMT 3/4'' (uno por inversor)\\L $\le$ 30 m, $\Delta V \le 0{,}92$~\%\\$I_{max}$ = \SI{15}{\ampere} (salida S650B)};
+
+% ---------------- TABLERO FV ----------------
+\node[eq,minimum width=3.6cm,minimum height=11.0cm,anchor=north] (TFV) at (17.8,14.0) {};
+\node[font=\scriptsize\bfseries,align=center] at (17.8,13.3) {TFV -- Tablero FV\\ \normalfont\tiny Square D NQ, NEMA 3R\\ \normalfont\tiny 208Y/120 V, 3$\phi$ 4h\\ \normalfont\tiny barras 100 A (exterior)};
+\draw[very thick] (17.8,12.4) -- (17.8,3.3);
+\node[eq,font=\tiny] (CB1) at (16.7,11.8) {CB-1\\35 A/3P\\QOB335};
+\node[eq,font=\tiny] (CB2) at (16.7,3.8)  {CB-2\\35 A/3P\\QOB335};
+\node[eq,font=\tiny] (CBSPD) at (18.9,9.9) {CB-SPD\\20 A/3P\\QOB320};
+\node[eq,font=\tiny] (SPDAC) at (18.9,8.0) {SPD-AC\\tipo 2\\SurgeLogic};
+\draw[acw] (CB1.east) -- (17.8,11.8); \draw[acw] (CB2.east) -- (17.8,3.8);
+\draw[acw] (CBSPD.west) -- (17.8,9.9); \draw[acw] (CBSPD.south) -- (SPDAC.north);
+\draw[acw,->] (INV1.east) -- node[cab,above]{C-AC1: 3\#8 + N\#8 + EGC\#10} node[cab,below]{THWN-2, EMT 3/4'', 3 m} (CB1.west);
+\draw[acw,->] (INV2.east) -- node[cab,above]{C-AC2: 3\#8 + N\#8 + EGC\#10} node[cab,below]{THWN-2, EMT 3/4'', 3 m} (CB2.west);
+
+% ---------------- IFV ----------------
+\node[eq,draw=red!70!black,minimum width=3.4cm] (IFV) at (24.6,7.0)
+ {\textbf{IFV} (exterior)\\Desconectador sin fusibles\\Square D HU363RB, 100 A, 600 V\\NEMA 3R, corte visible\\bloqueable con candado\\Desconectador FV e iniciador RSD};
+\draw[acw,->] (17.8,7.0) -- (TFV.east |- 0,7.0) -- node[cab,above]{C-AC3: 3\#4+N\#4+EGC\#8} node[cab,below]{EMT 1-1/4'', $\approx$1 m} (IFV.west);
+
+% ---------------- SISTEMA EXISTENTE ----------------
+\node[ex,minimum width=4.4cm] (TX) at (30.6,15.7) {Transformador ICE N.\textsuperscript{o} 119688 (existente)\\750 kVA, 34,5 kV / 480Y/277 V};
+\node[ex] (M480) at (30.6,14.2) {Interruptor 200 A/3P, 480 V, 18 kA\\(nicho del transformador)};
+\node[ex] (D200) at (30.6,12.6) {IP: interruptor ppal. 480 V\\(edificio, Square D)};
+\node[ex] (TS) at (30.6,11.0) {TS-01 (TX): 112,5 kVA, Z = 3,57 \%\\480$\Delta$ -- 208Y/120 V};
+\node[font=\tiny,text=red!60!black,anchor=east] at (28.15,7.55) {$I_{cc} \le$ 8,7 kA};
+\node[font=\tiny,text=red!60!black] at (24.6,8.45) {$I_{cc} \approx$ 6,8 kA};
+\node[font=\tiny,text=red!60!black] at (17.8,14.35) {$I_{cc} \approx$ 6,5 kA};
+\node[draw,thick,red!70!black,fill=red!8,align=center,font=\tiny] (CD) at (30.6,7.0) {\scriptsize\textbf{CD-FV} (interior)\\Bloque UL 1953 + CB-INT\\70 A/3P (HDL36070)\\TC del medidor MED-FV};
+\node[eq,font=\tiny,draw=blue!60!black] (MEDFV) at (35.0,7.0) {\scriptsize\textbf{MED-FV} (nuevo)\\Medidor SolarEdge Modbus\\3$\phi$ 4h, 208Y/120 V\\3 TC 400 A en el alimentador,\\lado TS-01 de la derivación\\RS485 $\rightarrow$ INV-1};
+\draw[thick,blue!60!black,densely dotted] (CD.east) -- (MEDFV.west);
+\node[eq,font=\tiny,draw=blue!60!black] (COM) at (35.4,10.6) {\scriptsize\textbf{COM-ICE} (si el servicio es binómico)\\Punto único de datos y telecontrol\\Router/módem LTE (p. ej. Teltonika RUT241)\\Modbus SunSpec TCP desde INV-1/INV-2\\Fuente con batería $\ge$ 2 h (DC-03-IT-21-001, 5.4.7--5.4.12)};
+\draw[thick,blue!60!black,densely dotted] (COM.south) -- (MEDFV.north);
+\node[draw,thick,dashed,red!70!black,fill=red!5,align=center,font=\tiny] (MICE) at (35.4,14.2) {\scriptsize\textbf{MED-ICE} bidireccional\\medición indirecta (TC)\\en 480 V, nicho del\\transformador (supuesto)};
+\draw[thick,red!70!black,dashed] (M480.east) -- (MICE.west);
+\node[ex] (ATS) at (30.6,4.6) {ATS Kohler 400 A\\KSS-ACTC-0400S};
+\node[ex,font=\tiny] (GEN) at (34.6,4.6) {\scriptsize Generador Kohler\\J100U-IV, 100 kW\\(E07; E01 indica\\GR-01, 55 kVA)};
+\node[ex] (MED) at (30.6,2.9) {Multimedidor\\(interno)};
+\node[ex,minimum width=3.2cm] (TP) at (30.6,1.2) {TP 120/208 V, barras 800 A\\Square D HCP32688, ppal. 400 A};
+
+\draw[exw] (TX) -- (M480);
+\draw[exw] (M480) -- node[cab,right]{1\#4/0/fase, 100 m} (D200);
+\draw[exw] (D200) -- (TS);
+\node[eq,font=\tiny,draw=red!70!black] (ISTS) at (30.6,9.1) {\scriptsize\textbf{IS-TS01} (nuevo, interior)\\Interruptor secundario 400 A/3P\\Schneider PowerPact LAL36400\\en gabinete NEMA 1, a $\le$ 3 m de TS-01\\(NEC 240.21(C)(2), 450.3(B))};
+\draw[exw] (TS) -- node[cab,right]{2$\times$(3\#4/0 + N), $\le$ 3 m} (ISTS);
+\draw[acw] (ISTS) -- node[cab,right]{alimentador protegido 400 A} (CD);
+\draw[exw] (CD) -- node[cab,right]{lado NORMAL} (ATS);
+\draw[exw] (GEN) -- node[cab,above]{EMERG.} (ATS);
+\draw[exw] (ATS) -- (MED); \draw[exw] (MED) -- (TP);
+\draw[acw,red!70!black,->] (IFV.east) -- node[cab,above]{C-AC4: 3\#4+N\#4+EGC\#8} node[cab,below]{pasamuro, $\approx$3 m} (CD.west);
+
+% ---------------- TIERRAS ----------------
+\draw[gnd] (TP.south) -- ++(0,-0.8) node[below,font=\tiny,align=center,text=green!40!black]{Barra de tierra TP / TS-01\\ malla existente $\le$ \SI{5}{\ohm} (G-01 a G-05)};
+\draw[gnd] (INV2.south) -- ++(0,-2.4) -| (TP.south west);
+\draw[gnd] (TFV.south) |- (TP.south west);
+\node[font=\tiny,text=green!40!black] at (14.6,0.15) {EGC continuo: marcos (orejetas UL 2703 + Cu estañado \#10), inversores, TFV, IFV, CD-FV $\rightarrow$ barra de tierra};
+
+\end{tikzpicture}

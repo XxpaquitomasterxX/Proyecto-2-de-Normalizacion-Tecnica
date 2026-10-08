@@ -1,0 +1,38 @@
+% Lámina FV-04: detalle conceptual de puesta a tierra, equipotencialización y medios de desconexión
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex,font=\scriptsize,
+  b/.style={draw,thick,rounded corners=2pt,align=center,fill=white,minimum width=3.4cm,minimum height=0.9cm},
+  e/.style={draw,thick,dashed,gray!70!black,rounded corners=2pt,align=center,fill=gray!8,minimum width=3.4cm,minimum height=0.9cm},
+  g/.style={very thick,green!45!black},
+  n/.style={font=\tiny,align=left,text width=5.6cm}]
+% columna de puesta a tierra
+\node[b] (MOD) at (0,9) {Marcos de módulos\\(aluminio anodizado)};
+\node[b] (RACK) at (0,7.5) {Orejeta de tierra listada UL 2703\\en cada marco + Cu estañado \#10};
+\node[b] (INV) at (0,6) {INV-1 / INV-2\\terminal de tierra};
+\node[b] (TFV) at (0,4.5) {TFV: barra de tierra\\(aislada del neutro)};
+\node[b] (IFV) at (0,3) {IFV (exterior) y CD-FV (interior):\\terminal de tierra};
+\node[e] (TS) at (0,1.5) {TS-01 / TP: barra de tierra\\puente de unión del sistema derivado};
+\node[e] (MALLA) at (0,0) {Malla de tierra existente (E01: registros G-01 a G-05)\\varillas Cu 19 mm $\times$ 3 m, exotérmica, $\le$ \SI{5}{\ohm}};
+\draw[g] (MOD) -- node[right,font=\tiny,align=left]{orejeta atornillada al marco (además\\de los dientes de unión del PVKIT)} (RACK);
+\draw[g] (RACK) -- node[right,font=\tiny]{EGC \#10 Cu estañado/aislado (en EMT)} (INV);
+\draw[g] (INV) -- node[right,font=\tiny]{EGC \#10 Cu (con C-AC1/2)} (TFV);
+\draw[g] (TFV) -- node[right,font=\tiny]{EGC \#8 Cu (con C-AC3)} (IFV);
+\draw[g] (IFV) -- node[right,font=\tiny]{EGC existente 2$\times$\#1/0 Cu} (TS);
+\draw[g] (TS) -- node[right,font=\tiny]{conductor del electrodo existente} (MALLA);
+\node[n,anchor=north west] at (5.6,9.6) {%
+\textbf{Criterios (NEC 2020)}\\[2pt]
+$\bullet$ Inversores sin transformador con arreglo no aterrizado (``Transformer-less, Ungrounded'' según la ficha; NEC 690.41(A)(4)): no requiere conductor del electrodo DC; el sistema se conecta al electrodo del sistema AC existente (690.41, 690.47(A)).\\
+$\bullet$ EGC dimensionado por 250.122 según el OCPD aguas arriba; el de \#10 se protege dentro del EMT (690.46, 250.120(C)).\\
+$\bullet$ El cobre desnudo no debe tocar la lámina galvanizada (par galvánico): usar conductor estañado o aislado y terminales bimetálicos listados.\\
+$\bullet$ Sobretensiones: SPD tipo 2 DC y AC integrados en cada SE10KUS (ficha) y SPD-AC tipo 2 en el TFV, unidos a la misma barra de tierra.\\
+$\bullet$ La EMT es continua y se une a la barra de tierra del TFV con bushing de tierra.\\
+$\bullet$ Unión de marcos: los documentos de S-5! difieren en el fusible serie máximo admitido por el listado UL 2703 del PVKIT (35/30 A en el manual de 2024; 25 A en las instrucciones de 2025) y el CS6W declara 30 A. Por eso la continuidad de tierra no depende del PVKIT: cada marco lleva una orejeta listada UL 2703 y un puente de Cu estañado \#10 hasta el EGC.\\
+$\bullet$ Rayo (NFPA 780, Anexo L): la frecuencia esperada de impactos (N\textsubscript{D} $\approx$ 0,038 por año, con N\textsubscript{g} = 15 rayos/km\textsuperscript{2}$\cdot$año supuesto) supera la tolerable (N\textsubscript{C} $\approx$ 0,003 por año); se recomienda a la UTN un sistema de protección contra rayos para el edificio. El arreglo queda preparado: barra de unión en el alero (BJ-DC) para unirlo a ese sistema y SPD del TFV sustituible por tipo 1.};
+% medios de desconexión
+\node[n,anchor=north west] at (5.6,4.2) {%
+\textbf{Medios de desconexión y apagado rápido}\\[2pt]
+\textbf{1. Nivel módulo:} S650B; al perder AC, cada optimizador baja a \SI{1}{\volt} ($\le$ \SI{9}{\volt} por string), cumpliendo NEC 690.12 dentro y fuera del arreglo.\\
+\textbf{2. DC en inversor:} desconectador DC integrado a cada SE10KUS (690.15).\\
+\textbf{3. AC por inversor:} CB-1 y CB-2, 35 A, en el TFV.\\
+\textbf{4. Desconectador del sistema FV e iniciador de RSD:} IFV en la fachada sur (exterior), de corte visible, bloqueable y accesible para el ICE y Bomberos (690.12(C), 690.13, 705.20).\\\textbf{5. Protección de la derivación:} CB-INT de 70 A dentro de CD-FV, a $\le$ 3 m del punto de derivación del alimentador protegido por IS-TS01 de 400 A (240.21(B)(1), 240.21(C)(2)).\\
+\textbf{6. Fuente normal:} interruptor 200 A en 480 V (existente).};
+\end{tikzpicture}

@@ -1,0 +1,1823 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\DeclareUnicodeCharacter{20A1}{\textcent}% símbolo del colón (₡), se imprime como ¢ como en el pliego del ICE
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=3pt,parsep=0pt}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,babel}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pdflscape}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{hyperref}
+\setlength{\emergencystretch}{2em} % evita líneas desbordadas
+
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=black}
+\sisetup{output-decimal-marker={,},group-separator={\,},group-minimum-digits=4,per-mode=symbol}
+\DeclareSIUnit\kWp{kWp}
+\DeclareSIUnit\anio{\text{año}}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{EL-4601 Normalización Técnica para Electrónica}
+\rhead{Proyecto No. 2}
+\cfoot{\thepage\ de \pageref{LastPage}}
+\setlength{\headheight}{15pt}
+\fancypagestyle{lscape}{\fancyhf{}\lhead{EL-4601 Normalización Técnica para Electrónica}\rhead{Proyecto No. 2}\cfoot{\thepage\ de \pageref{LastPage}}}
+\titleformat{\section}{\Large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection.}{0.5em}{}
+\captionsetup{font=small,labelfont=bf}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Marca de los supuestos de diseño (Cuadro~\ref{tab:supuestos}).
+\newcommand{\supuesto}{\textsuperscript{\textcolor{orange!80!black}{\textbf{(S)}}}}
+
+\begin{document}
+
+% =====================================================================
+\begin{titlepage}
+\centering
+\vspace*{1.2cm}
+{\Large Instituto Tecnológico de Costa Rica\\[0.3cm]}
+{\large Unidad de Ingeniería Electrónica -- Centro Académico de Alajuela\\[1.0cm]}
+{\large EL-4601 Normalización Técnica para Electrónica\\[0.5cm]}
+{\LARGE\bfseries Proyecto No. 2\\[0.35cm]}
+{\LARGE\bfseries Diseño normativo de una instalación solar fotovoltaica\\[0.2cm]}
+{\Large Cubierta del edificio del Centro Académico de Alajuela -- TEC\\[0.2cm]}
+{\large Sistema de \SI{20.88}{\kWp} conectado a la red del ICE para autoconsumo\\[1.5cm]}
+
+\begin{tabular}{rl}
+\textbf{Integrantes:} & Walter Alfaro Ulate -- carné 2023073145\\
+& Sebastián Meneses Castillo -- carné 2024139307\\
+& Thomas Reed Víquez -- carné 2023210321\\
+\textbf{Profesor:} & Luis Roberto Pereira Arroyo\\
+\textbf{Fecha:} & 7 de octubre de 2026\\
+\end{tabular}
+
+\vfill
+{\small Alajuela, Costa Rica -- II Semestre 2026}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+\listoffigures
+\listoftables
+\clearpage
+
+% =====================================================================
+\section{Resumen ejecutivo}
+
+Este documento presenta el diseño normativo de un sistema solar fotovoltaico (FV) conectado a la red, para autoconsumo, sobre la cubierta del edificio del Centro Académico de Alajuela (CAA) del Tecnológico de Costa Rica. El edificio está dentro del campus de la Universidad Técnica Nacional (UTN), en Alajuela, y lo atiende el Instituto Costarricense de Electricidad (ICE) mediante el transformador de pedestal N.\textsuperscript{o} 119688 (\SI{750}{\kilo\volt\ampere}, 34,5~kV/480Y/277~V).
+
+\textbf{Solución propuesta.}
+\begin{itemize}
+\item Arreglo de \SI{20.88}{\kWp}: 36 módulos Canadian Solar CS6W-580TB-AG (listados UL 61730), cada uno con un optimizador SolarEdge S650B.
+\item Cuatro strings de nueve módulos conectados a dos inversores trifásicos SolarEdge SE10KUS (\SI{10}{\kilo\watt}, 208Y/120~V). La ficha del fabricante declara UL 1741 SB e IEEE 1547-2018, lo que indica compatibilidad con lo que pide el ICE; la admisibilidad del equipo queda pendiente del informe de verificación documental del ICE-LEE o del ECA (DC-03-IT-21-001, 5.5.4).
+\item Montaje coplanar sin perforaciones (S-5! PVKIT 2.0 sobre abrazaderas S-5-U) en la cubierta metálica de junta alzada, con 15\,\% de pendiente orientada al ENE (azimut de unos 60°).
+\item Interconexión en el secundario del transformador seco TS-01 (208Y/120~V), del \emph{lado normal} del ATS, aguas abajo de un nuevo interruptor secundario de 400~A (IS-TS01) a la salida de TS-01. Así, el generador de emergencia de \SI{100}{\kilo\watt} nunca queda en paralelo con el sistema FV.
+\item Inversores configurados como DER de categoría B del ICE, con el modo volt-var activo por defecto y los demás modos de control obligatorios disponibles (DC-03-IT-21-001, 5.7). Si el servicio del edificio es binómico, se agrega un punto único de datos y telecontrol hacia el SCADA del ICE (5.4.7--5.4.12).
+\end{itemize}
+
+\textbf{Resultados principales.}
+\begin{itemize}
+\item Producción estimada: \SI{31.0}{\mega\watt\hour} al año (\SI{1484}{\kilo\watt\hour\per\kWp}, $PR=0{,}78$ respecto a la irradiación en el plano), con la orientación real confirmada en sitio (azimut de 60°) y las sombras de las condensadoras y de los árboles cercanos. Se usaron datos del Instituto Meteorológico Nacional (IMN) y un modelo horario de transposición. Con la estación Fabio Baudrit el resultado es \SI{28.4}{\mega\watt\hour}.
+\item Cobertura: alrededor del 20\,\% del consumo anual estimado del edificio.
+\item Relación DC/AC: 1,04.
+\item Caídas de tensión: 0,92\,\% en DC y 0,46\,\% en AC, ambas menores que el criterio de diseño del 1\,\%.
+\item El arreglo queda completamente en la zona interior de presión de viento y respeta un pasillo perimetral de \SI{1.2}{\meter} para Bomberos (NFPA 1). La verificación de viento usa la Zona~III del CFIA ($V_b=\SI{115}{\kilo\meter\per\hour}$) con estados de servicio y último separados.
+\item Costo nivelado de la energía (LCOE) de unos ₡46/kWh, frente a un cargo de energía de ₡50,72/kWh en la tarifa T-CS de 2026 (bloque de más de 3000~kWh); retorno simple de unos 10 años en el escenario base. El análisis económico se hace antes de impuestos.
+\end{itemize}
+
+\textbf{Viabilidad.} El proyecto resulta \textbf{preliminarmente factible, condicionado} a las verificaciones que el diseño no puede cerrar por sí mismo: el arreglo cabe en la cubierta respetando los pasillos de Bomberos y la zona interior de viento, el punto de interconexión propuesto (con el interruptor IS-TS01) se ajusta a las reglas del NEC 2020 sin poner en paralelo el sistema FV con el generador, y la documentación del fabricante de los equipos indica compatibilidad con lo que pide el ICE. No se declara cumplimiento normativo definitivo, porque quedan pendientes: el informe de verificación documental del inversor (ICE-LEE o ECA), el estudio técnico de capacidad del ICE, la confirmación de la tarifa del servicio (si es binómica, se exige la interfaz con el SCADA del ICE), el dictamen estructural de la cubierta con la verificación de viento firmada y la autorización de la UTN como propietaria. En lo económico, el proyecto es \textbf{viable con un margen estrecho a moderado}: con las tarifas del ICE de 2026, el retorno simple es de unos 10 años (T-CS) u 8 años (T-CO). La tarifa de acceso de ₡25/kWh solo aplica a abonados con tarifa monómica, mientras que el consumo estimado del edificio lo ubica en el bloque binómico de más de 3000~kWh; la tarifa real debe confirmarse con la factura del NISE (sección~\ref{sec:viabilidad}).
+
+\textbf{Decisiones derivadas de la verificación normativa.} El contraste con la normativa descartó tres alternativas que eran eléctricamente adecuadas:
+\begin{enumerate}[label=(\roman*)]
+\item Un inversor sin certificación pública IEEE 1547-2018/UL 1741 SB, requisito del ICE (DC-03-IT-21-001, 5.5.4).
+\item Un módulo sin listado UL 61730, requisito de NEC 690.4(B).
+\item La conexión en el tablero principal TP, que queda aguas abajo del ATS: el sistema FV habría quedado energizado por el generador. El TP sí tiene espacios libres (verificado en sitio), por lo que el descarte es solo operativo.
+\end{enumerate}
+
+\textbf{Verificación en sitio.} El 5 de octubre de 2026 se hizo un registro fotográfico del exterior del edificio y del cuarto eléctrico (Anexo~\ref{sec:fotos}). Con él se confirmaron la cadena IP (480~V) -- TS-01 -- ATS -- TP y el alimentador TS-01--ATS que usa el diseño, se midieron las coordenadas con GPS, se leyó la impedancia de placa de TS-01 (3,57\,\%) y se confirmó que la cubierta cae hacia el ENE (azimut de unos 60°). Varios datos de los planos as-built resultaron distintos de lo instalado (modelo y capacidad del TP, modelo del ATS); el documento usa los datos de placa.
+
+\textbf{Supuestos y limitaciones.} La información que no fue posible obtener del edificio (medidor del ICE, perfil de la lámina, placa del generador, facturación, entre otros) se completó con supuestos de diseño coherentes con los planos, las fotografías y la normativa; se reúnen en el Cuadro~\ref{tab:supuestos} y se marcan en el texto con \supuesto{}. La única condición que el diseño no puede resolver por sí mismo es la capacidad estructural residual de la cubierta, que los planos no certifican: se declara como limitación y la viabilidad queda condicionada al dictamen de un ingeniero estructural.
+
+% =====================================================================
+\section{Objetivos}
+\subsection{Objetivo general}
+Diseñar una instalación solar fotovoltaica conectada a la red para la cubierta del edificio del CAA-TEC. El diseño se fundamenta en la normativa costarricense vigente, en los planos as-built del edificio y en las hojas técnicas de equipos disponibles comercialmente.
+
+\subsection{Objetivos específicos}
+\begin{itemize}[leftmargin=1.2cm]
+\item Identificar y resumir el marco legal, reglamentario, tarifario y técnico aplicable en Costa Rica, verificando la edición y vigencia de cada documento.
+\item Comparar los requisitos de una vivienda, una cubierta comercial o industrial y una instalación sobre terreno.
+\item Caracterizar el emplazamiento: cubierta, estructura, sombras, clima, sistema eléctrico y perfil de consumo.
+\item Seleccionar equipos certificados y compatibles entre sí, comparando alternativas comerciales.
+\item Diseñar la distribución del arreglo, las canalizaciones, las protecciones, la puesta a tierra y el punto de interconexión sobre los planos del sitio.
+\item Verificar mediante cálculos la producción energética, los strings, los conductores, las protecciones, las cargas y el viento.
+\item Analizar el cumplimiento normativo, los riesgos, los trámites y las limitaciones de la solución.
+\item Determinar si la instalación es viable desde los puntos de vista técnico, normativo, estructural y económico, e identificar las condiciones de las que depende esa viabilidad.
+\end{itemize}
+
+% =====================================================================
+\section{Marco normativo aplicable}
+\label{sec:normativa}
+Esta sección resume los requisitos que condicionan el diseño y, para cada uno, la decisión que provocan. El Cuadro~\ref{tab:vigencia} (al final de la sección) registra la edición y vigencia de cada documento.
+
+\subsection{Ley N.\textsuperscript{o} 10086 y su reglamento}
+La Ley N.\textsuperscript{o} 10086, \emph{Promoción y regulación de recursos energéticos distribuidos a partir de fuentes renovables} (2021) \cite{ley10086}, regula el acceso, la instalación, la interconexión y la operación de los recursos energéticos distribuidos (RED). Su reglamento es el Decreto Ejecutivo N.\textsuperscript{o} 43879-MINAE \cite{reg43879}. Ambos son el marco que aplica hoy el ICE \cite{iceGD}. A la fecha de consulta (3 de octubre de 2026) no se identificaron reformas a la Ley 10086 en las fuentes oficiales revisadas (MINAE \cite{minaeMarco} e ICE \cite{iceGD}); los cambios posteriores a 2021 se han dado por vía reglamentaria y tarifaria (Decreto 43879-MINAE y resoluciones RE-0076-JD-2023 y RE-0126-JD-2024 de ARESEP \cite{aresepMetod}). La consulta se hizo sobre las fuentes oficiales citadas; el SCIJ es la referencia final para cualquier reforma posterior.
+
+\textbf{Efectos sobre el diseño:}
+\begin{enumerate}[label=(\alph*)]
+\item El sistema FV es un RED para autoconsumo. Debe tramitarse ante la empresa distribuidora y operar bajo un contrato de interconexión. No se trata de una simple modificación interna del edificio.
+\item Se debe escoger una modalidad de operación. Las que ofrece la distribuidora son: aislada, interconectada sin inyección de excedentes e interconectada con inyección de excedentes \cite{iceGD}. Se escoge la \textbf{modalidad con inyección de excedentes}, porque los fines de semana el consumo base del edificio es menor que la generación (sección~\ref{sec:consumo}).
+\item La solicitud la presenta el abonado del servicio. Si el abonado no es el TEC, se necesita su autorización y también la del propietario del inmueble, la UTN.
+\item La capacidad que se puede conectar depende de la capacidad de penetración del circuito de distribución. El ICE la evalúa con el procedimiento citado en su portal (RE-0095-JD-2023) \cite{iceGD}.
+\end{enumerate}
+
+\subsection{Código Eléctrico de Costa Rica (NFPA 70, NEC 2020)}
+El \emph{Reglamento de Oficialización del Código Eléctrico de Costa Rica para la Seguridad de la Vida y de la Propiedad} (RTCR 458:2011, Decreto N.\textsuperscript{o} 36979-MEIC) oficializa la NFPA 70. El artículo 1 oficializa la NFPA 70 ``en su última versión actualizada en español''. Las nuevas ediciones rigen desde que el Ministerio lo comunica en La Gaceta, sin necesidad de un nuevo decreto. La edición vigente es el NEC 2020, según el aviso publicado en La Gaceta N.\textsuperscript{o} 126 del 10 de julio de 2024 \cite{rtcr458,gacetaNEC}. El decreto ha sido reformado por los decretos 38440-MEIC (2014), 41505-MEIC (2019) y 43418-MEIC (2022) \cite{rtcr458}.
+
+Además del texto del NEC, el reglamento costarricense impone obligaciones propias que afectan este proyecto \cite{rtcr458}:
+\begin{itemize}
+\item \textbf{Diseño por profesional del CFIA.} Toda instalación nueva, ampliación o remodelación debe diseñarla un profesional incorporado al CFIA.
+\item \textbf{Declaración jurada antes de la conexión (art. 5.1.3).} Al terminar la obra, el profesional responsable declara bajo juramento que la instalación cumple el Código. El comprobante del CFIA es requisito para que la distribuidora conecte el servicio.
+\item \textbf{Evaluación de la conformidad de materiales y equipos (art. 5.3).} El profesional debe verificar que cada material y equipo cuente con un proceso de evaluación de la conformidad. En este diseño se cumple con equipos listados por laboratorios reconocidos (UL/CSA) y con las fichas citadas en el Cuadro~\ref{tab:normasint}.
+\item \textbf{Verificación periódica por una UVIE (arts. 5.2.1 y 5.2.2).} Las edificaciones con áreas clasificadas o con ocupaciones de reunión para cien o más personas deben verificarse cada cinco años por una Unidad de Verificación de Instalaciones Eléctricas acreditada ante el ECA (INTE-ISO/IEC 17020). El edificio tiene ocupación educativa y de oficinas, sin áreas clasificadas ni recintos de reunión para cien o más personas según los planos arquitectónicos \supuesto{}, por lo que no se le asigna verificación periódica; si la UTN la tuviera programada, la ampliación FV se incorpora en el informe de la UVIE.
+\end{itemize}
+
+El Cuadro~\ref{tab:nec} resume los artículos del NEC 2020 que se aplicaron y la decisión que produjo cada uno.
+
+{\small
+\begin{longtable}{L{2.25cm}L{5.85cm}L{6.9cm}}
+\caption{Artículos del NEC 2020 aplicados y su efecto sobre el diseño.}\label{tab:nec}\\
+\toprule
+\textbf{Artículo} & \textbf{Requisito} & \textbf{Decisión de diseño}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Artículo} & \textbf{Requisito} & \textbf{Decisión de diseño}\\
+\midrule\endhead
+110.3(B), 690.4(B) & Equipos listados e instalados según sus instrucciones. & Se descartó un módulo sin listado UL 61730. Todos los equipos principales están listados (Cuadro~\ref{tab:normasint}).\\
+110.9, 110.10 & Capacidad interruptiva, SCCR y corriente de falla disponible. & Falla de \SI{8.7}{\kilo\ampere} como cota superior en el secundario de TS-01 (impedancia de placa de 3,57\,\%), \SI{6.8}{\kilo\ampere} en el IFV y \SI{6.5}{\kilo\ampere} en el TFV; menores que la capacidad de QOB (10~kA), HDL (25~kA a 240~V) y el SCCR exigido al IFV (10~kA). Valor rotulado en CD-FV.\\
+110.16, 110.21(B) & Rotulación de riesgo de arco y rótulos de campo permanentes. & Ver Cuadro~\ref{tab:rotulos} y lámina FV-04.\\
+110.26 & Espacio de trabajo frente a equipos eléctricos. & Se reservan \SI{0.9}{\meter} de profundidad, \SI{0.76}{\meter} de ancho y \SI{2.0}{\meter} de altura frente a INV, TFV e IFV (lámina FV-02).\\
+240.24(A), 404.8(A) & Altura máxima de la manija de operación: 2,0~m. & IFV, TFV y CD-FV con manija a 2,0~m o menos (elevación E1 de FV-02).\\
+300.6 & Protección contra la corrosión. & Herrajes de acero inoxidable y aluminio; sin contacto entre cobre y lámina galvanizada.\\
+690.7 & Tensión máxima del circuito DC, corregida por temperatura; en convertidores DC-DC, según su listado. & Se verifica el $V_{oc}$ de cada módulo en frío contra la entrada del optimizador (\SI{85}{\volt}) y la tensión del string contra el límite del inversor (\SI{600}{\volt}).\\
+690.8 & Corriente máxima del circuito; el conductor debe soportar el 125\,\% con correcciones. & Se usa $I_{max}=\SI{15}{\ampere}$ (salida del optimizador). El cable PV \#10 queda con \SI{30.7}{\ampere} corregidos.\\
+690.9 & Protección contra sobrecorriente. & No se requieren fusibles de string: la corriente de falla (\SI{15}{\ampere}) es menor que la ampacidad del conductor y que el fusible serie máximo del módulo (\SI{30}{\ampere}).\\
+690.11 & Protección contra arco eléctrico DC en edificios ($\geq$ \SI{80}{\volt}). & Los inversores tienen AFCI listado (UL 1699B).\\
+690.12(B)(1), (B)(2), (C) & Apagado rápido: $\leq$ \SI{30}{\volt} fuera del arreglo y $\leq$ \SI{80}{\volt} dentro, en 30~s; iniciador accesible. & Se usan optimizadores S650B: \SI{1}{\volt} por módulo en modo seguro. El iniciador es el IFV, en la fachada exterior.\\
+690.13, 690.15 & Desconectador del sistema FV y del equipo. & IFV con corte visible y bloqueable; desconectador DC integrado en cada inversor.\\
+690.31(D), 358 & Circuitos DC sobre o dentro de edificios en canalización metálica, rotulada a no más de 3~m. & EMT (art. 358) en cubierta y fachada. Los circuitos DC no entran al edificio.\\
+690.41--690.47 & Puesta a tierra del sistema y de los equipos. & Orejeta listada UL 2703 en cada marco y EGC continuo hacia la malla existente (lámina FV-04).\\
+690.53, 690.54, 690.56(C)(1), (C)(2) & Rótulo de tensión DC máxima, rótulo del punto de interconexión, rótulo de apagado rápido y rótulo del interruptor iniciador. & Ver Cuadro~\ref{tab:rotulos}.\\
+705.10 & Directorio de fuentes en el servicio. & Placa con ICE, generador y FV en el servicio, en el ATS y en el TP.\\
+705.12(B)(1), (B)(2), (B)(3) & Conexión del lado de la carga: regla de alimentadores, derivaciones y barras (regla del 120\,\%). & Se evalúan tres alternativas. Se elige la conexión al alimentador protegido por el nuevo IS-TS01, en el secundario de TS-01 (sección~\ref{sec:interconexion}).\\
+705.12(D), (E) & Interruptores aptos para retroalimentación y fijados. & QOB335 atornillables.\\
+705.20, 705.40 & Desconectador de la fuente; pérdida de la red primaria. & IFV accesible; los inversores dejan de inyectar en $\leq$ \SI{2}{\second} (IEEE 1547-2018).\\
+240.21(B)(1) & Derivaciones de alimentador (regla de 3~m). & La derivación se hace sobre el alimentador protegido en su origen por IS-TS01 (400~A) y termina, a $\leq$ \SI{3}{\meter}, en el interruptor CB-INT de \SI{70}{\ampere} dentro de CD-FV.\\
+240.21(C)(2), 240.4(F), 450.3(B) & Conductores secundarios de transformador y protección de TS-01. & Como la protección primaria de un transformador delta-estrella no protege el secundario (240.4(F)), se agrega IS-TS01 de 400~A a $\leq$ 3~m de TS-01; 2$\times$\#4/0 = 460~A $\geq$ 400~A. Primario de 200~A $\leq$ 250\,\% de 135,3~A y secundario de 400~A, valor normalizado siguiente al 125\,\% de 312,3~A (sección~\ref{sec:calc_inter}).\\
+250.122 & Calibre del conductor de puesta a tierra de equipo. & EGC \#10 para \SI{35}{\ampere}; \#8 para \SI{70}{\ampere}.\\
+310.15, 310.16 & Ampacidad y factores de corrección por temperatura y agrupamiento. & Ver Cuadro~\ref{tab:conductores}.\\
+\bottomrule
+\end{longtable}}
+
+\subsection{Normativa técnica y tarifaria de ARESEP}
+ARESEP regula los aspectos técnicos y tarifarios de la generación distribuida:
+\begin{itemize}
+\item \textbf{AR-RT-POASEN} (\emph{Planeación, Operación y Acceso al Sistema Eléctrico Nacional}). Tuvo una reforma integral aprobada por la Junta Directiva de ARESEP y publicada en La Gaceta el 4 de mayo de 2026, que rige un mes después de su publicación (4 de junio de 2026) \cite{aresepNorm,poasen2026}. Establece las condiciones técnicas de acceso e interconexión de los RED y su operación coordinada con la red de distribución.
+\item \textbf{AR-NT-SUCOM} (supervisión de la comercialización del suministro). Regula la relación comercial entre el abonado y la distribuidora: medición, facturación y contrato \cite{aresepNorm}.
+\item \textbf{Metodología tarifaria derivada de la Ley 10086} (resolución RE-0076-JD-2023, ajustada por la RE-0126-JD-2024) \cite{aresepMetod}. Con base en ella, ARESEP aprobó en septiembre de 2023 cuatro tipos de tarifas para los RED, vigentes desde el 1 de octubre de 2023: interconexión, acceso, compraventa de excedentes y reconocimiento económico a la distribuidora \cite{aresepGD}. Las tarifas vigentes del ICE se publican en su pliego tarifario \cite{iceGD}.
+\end{itemize}
+
+Los valores vigentes que publica el ICE para los RED \cite{iceTarRED} son:
+\begin{itemize}
+\item \textbf{Cargos de interconexión} (RE-0031-IE-2026): ₡16\,453 (etapa 1), ₡125\,978 (etapa 2), ₡116\,590 (etapa 3) y ₡79\,803 (etapa 4), más IVA.
+\item \textbf{Tarifa de acceso:} ₡25/kWh sobre la energía autoabastecida, aplicable al abonado productor con \emph{tarifa monómica}.
+\item \textbf{Compraventa de excedentes:} ₡27,40/kWh en periodos punta y valle, y ₡19,04/kWh en periodo nocturno.
+\item \textbf{Reconocimiento económico (TDER):} ₡255 mensuales por kW instalado.
+\end{itemize}
+
+\textbf{Base fiscal.} Según la nota final del documento del ICE, los montos anteriores están sujetos a IVA. El pliego tarifario ordinario, en cambio, se publica sin impuesto de ventas ni otros cargos \cite{icePliego}. Por eso la evaluación económica de la sección~\ref{sec:viabilidad} se hace en una sola base, \emph{antes de impuestos}.
+
+\textbf{Efecto sobre el diseño:} se requiere medición bidireccional en el punto de servicio del ICE. La rentabilidad depende de cuánto se autoconsume: cada kWh autoconsumido evita el cargo de energía de la tarifa del edificio, mientras que los excedentes se liquidan a ₡27,40/kWh, aproximadamente la mitad de ese cargo. Por eso el sistema se dimensiona para que la mayor parte de la energía se consuma en el sitio. La aplicación de la tarifa de acceso depende de que la tarifa del edificio sea monómica o binómica (con cargo por demanda), lo que define el escenario económico de la sección~\ref{sec:viabilidad}.
+
+\subsection{Requisitos de la empresa distribuidora (ICE)}
+El edificio se alimenta del transformador del ICE N.\textsuperscript{o} 119688 (lámina E01), por lo que la distribuidora es el ICE. Su portal de generación distribuida (actualizado el 28 de septiembre de 2026) \cite{iceGD} publica los siguientes documentos:
+\begin{itemize}
+\item \textbf{DC-03-IT-21-001} (marzo de 2025): condiciones técnicas para la interconexión de recursos distribuidos.
+\item \textbf{DC-03-PR-21-001} versión 2.2: guía de trámite \cite{iceGuia}.
+\item \textbf{Formularios:}
+  \begin{itemize}
+  \item DC-03-FO-21-001: solicitud de interconexión.
+  \item DC-03-FO-21-002: solicitud de estudio técnico.
+  \item DC-03-FO-21-003: solicitud de inspección.
+  \item DC-03-FO-21-004: declaración jurada de perfil de consumo.
+  \item DC-03-FO-21-005: solicitud de prórroga.
+  \item \emph{Contrato de servicio de interconexión para recursos energéticos distribuidos (modalidad autoconsumo)}. El portal lo publica como un documento aparte, sin código en la etiqueta del enlace; el archivo que descarga el ICE se denomina ``DC-03-FO-21-006 Contrato de Servicios de Interconexión Generación Distribuida V1'' \cite{iceContrato}, por lo que aquí se le identifica con ese código.
+  \end{itemize}
+\end{itemize}
+
+La guía \cite{iceGuia} pide, entre otros requisitos:
+\begin{itemize}
+\item Plano eléctrico visado.
+\item Boleta de sellado eléctrico del CFIA y copia del carné del ingeniero responsable.
+\item Declaración jurada con el perfil de consumo.
+\item Certificación vigente del inversor bajo UL 1741, en su última versión vigente, y cumplimiento de IEEE 1547:2018.
+\item Informe de verificación documental de esa certificación. El instructivo DC-03-IT-21-001, apartado 5.5.4 \cite{iceIT}, exige que el abonado solicite al Laboratorio de Eficiencia Energética del ICE (ICE-LEE) la verificación de la validez y vigencia del certificado (inciso a); la verificación puede hacerla también el ECA, con la misma validez (inciso b), y \emph{para la admisibilidad de los equipos es obligatorio presentar ese informe} (inciso c). Para solicitudes tramitadas desde el 1 de enero de 2026, el certificado debe evidenciar el suplemento SA o SB de UL 1741 (inciso f). La guía indica un costo externo de USD~135 por la verificación del ICE-LEE en la etapa 2 \cite{iceGuia}.
+\end{itemize}
+
+Además, el instructivo DC-03-IT-21-001 \cite{iceIT} fija condiciones de operación que afectan la configuración del sistema:
+\begin{itemize}
+\item \textbf{Categoría y modos de control (5.7).} Todo DER se designa por defecto como \textbf{categoría B} (5.7.2), salvo que el ICE apruebe la categoría A a solicitud del abonado. Para la categoría B son obligatorios los modos de factor de potencia constante, tensión--potencia reactiva (volt-var), potencia activa--potencia reactiva, potencia reactiva constante y tensión--potencia activa (volt-watt) (5.7.3). El modo por defecto es volt-var, salvo que el operador de la red indique otro para el punto de acople común (5.7.6), con capacidad de inyección y absorción de reactivos del 44\,\% de la potencia aparente nominal (5.7.5).
+\item \textbf{Comunicación con el SCADA del ICE (5.4.7--5.4.12).} Los DER de 100~kVA o más \emph{o de abonados binómicos} requieren una interfaz de comunicación con el SCADA del ICE, con un protocolo abierto de la tabla 41 de INTE N137:2024 (IEEE 2030.5, IEEE 1815/DNP3, Modbus SunSpec o IEC 61850) (5.4.7). Todos los recursos de un abonado binómico deben comunicarse (datos y telecontrol) por un único punto conectado a un módem de internet (5.4.9), con SIM aportada por el cliente (5.4.10) y alimentación respaldada al menos 2~horas (5.4.12).
+\item \textbf{Medición de generación (5.4.15).} Los abonados monómicos deben instalar además un medidor AMI de generación.
+\end{itemize}
+
+El ICE resuelve cada etapa en 10 días hábiles. Para potencias mayores de 50~kVA, o con medición indirecta, el medidor se cotiza aparte.
+
+\textbf{Efecto sobre el diseño.} El requisito de certificación llevó a descartar el primer inversor evaluado. La ficha pública del Fronius Symo Advanced 10.0-3 208-240 declara UL 1741 (2.ª edición) con Suplemento SA e IEEE 1547-2003, pero no IEEE 1547-2018 ni UL 1741 SB \cite{fronius}. El SolarEdge SE10KUS sí declara ``UL 1741; UL 1741 SA; UL 1741 SB'' e ``IEEE 1547-2018'' \cite{seInv}. Esa declaración del fabricante indica compatibilidad, pero \textbf{no basta para declarar el equipo admisible}: la admisibilidad queda pendiente del informe ICE-LEE o ECA (5.5.4(c)), que se presupuesta y se tramita en la etapa 2. Los requisitos de categoría B y de comunicación se traducen en la configuración de la sección~\ref{sec:config_ice}.
+
+\subsection{Seguridad contra incendios: Cuerpo de Bomberos}
+El \emph{Reglamento Nacional de Protección contra Incendios} (Decreto N.\textsuperscript{o} 37615-MP, reformado por el N.\textsuperscript{o} 43733) adopta varios códigos NFPA en español, entre ellos NFPA 1 (ed. 2012) y NFPA 101 (ed. 2021) \cite{rnpci}. La sección 11.12 de NFPA 1 \cite{nfpa1} regula los sistemas FV en techos y establece:
+\begin{itemize}
+\item Un pasillo perimetral libre de \SI{1.2}{\meter} (4~ft) en edificios no residenciales con algún eje de 76~m (250~ft) o menos. El edificio mide unos 15 por 18~m, por lo que aplica este caso.
+\item Pasillos de \SI{1.2}{\meter} hacia escotillas, accesos y elementos de ventilación.
+\item Un tamaño máximo de arreglo de 46~m por 46~m (150~ft por 150~ft).
+\end{itemize}
+
+\textbf{Efecto sobre el diseño:} el arreglo queda a \SI{2.3}{\meter} o más de los bordes laterales y a \SI{3.2}{\meter} o más de las losas de condensadoras. La rotulación de apagado rápido, el directorio de fuentes y el IFV accesible facilitan la intervención de Bomberos. Debe consultarse a la Ingeniería de Bomberos si la modificación de la cubierta requiere revisión de planos.
+
+\subsection{CFIA, municipalidad y diseño estructural}
+\begin{itemize}
+\item \textbf{CFIA.} Los planos eléctricos y estructurales deben ser elaborados y firmados por profesionales incorporados y registrados en la plataforma APC. El visado del plano eléctrico y la boleta de sellado son requisitos del ICE.
+\item \textbf{Viento.} Los \emph{Lineamientos para el diseño por viento de edificaciones en Costa Rica} (CFIA, Alcance N.\textsuperscript{o} 48 a La Gaceta N.\textsuperscript{o} 52, 21 de marzo de 2023) \cite{cfiaViento} son de aplicación obligatoria. Su Tabla 3-1 clasifica \emph{todos} los distritos del cantón de Alajuela en la Zona~III, a la que la Figura 3-1 asigna $V_b=\SI{115}{\kilo\meter\per\hour}$ para $T_R=50$~años. El valor de \SI{90}{\kilo\meter\per\hour} es solo el límite inferior que se admite cuando la velocidad se determina con datos climáticos regionales (sección 3.1.3), no la velocidad de diseño del sitio. Exigen clasificar la edificación por categoría de diseño por viento (Tabla 2-1, según el Código Sísmico) y verificar sus objetivos de desempeño (sección 2.5, Tabla 2-5) con el coeficiente de recurrencia de cada período de retorno (Tabla 3-3) y el coeficiente de direccionalidad de cada estado (1,0 en servicio; 0,85 en las combinaciones de resistencia). También definen zonas de borde de ancho $a$ en las cubiertas.
+\item \textbf{Municipalidad de Alajuela.} La instalación se realizará sobre una edificación existente. La clasificación del trámite municipal (trabajo de mantenimiento, permiso de construcción u otra categoría) deberá confirmarse con Control Constructivo de la Municipalidad de Alajuela antes de la ejecución. El Reglamento de Obras de Mantenimiento Menor (arts. 4 y 6) limita esa categoría a trabajos de reparación, mantenimiento o seguridad que no alteran el área ni la forma ni modifican estructuralmente el inmueble, y excluye los que requieren atención especial por criterio estructural o de riesgo; el Reglamento de Construcciones municipal de 2024 (arts. 571--579) distingue los permisos de construcción tramitados por APC de las autorizaciones para trabajos de mantenimiento \cite{muniAlajuela}. Un sistema nuevo de 20,88~kWp sobre la cubierta, con equipos eléctricos, un nuevo interruptor de 400~A en la interconexión y la verificación estructural pendiente no debe clasificarse unilateralmente como mantenimiento. Debe aportarse además el visto bueno del propietario (UTN).
+\end{itemize}
+
+\subsection{Instituciones y responsabilidades}
+\begin{table}[H]
+\centering\small
+\caption{Participación de las instituciones en el proyecto.}\label{tab:instituciones}
+\begin{tabularx}{\textwidth}{L{2.4cm}YY}
+\toprule
+\textbf{Institución} & \textbf{Rol} & \textbf{Participación en este proyecto}\\
+\midrule
+MINAE & Rector del sector energía; emite el reglamento de la Ley 10086. & Marco general. Sin trámite directo para un sistema de autoconsumo de este tamaño.\\
+ARESEP & Regulador técnico y tarifario (POASEN, SUCOM, tarifa de acceso). & Define las condiciones de interconexión, medición y tarifa de acceso que aplica el ICE.\\
+ICE (distribuidora) & Recibe solicitudes, hace estudios técnicos, verifica la certificación de los inversores (ICE-LEE), inspecciona y firma el contrato. & Formularios DC-03-FO-21-001 a 005, verificación documental ICE-LEE/ECA, estudio de capacidad, ajustes de categoría B, SCADA si el abonado es binómico, inspección, medidor bidireccional y contrato (DC-03-FO-21-006).\\
+CFIA & Ejercicio profesional y registro de planos (APC). & Planos eléctrico y estructural firmados, visado y boleta de sellado.\\
+Cuerpo de Bomberos & Aplica el RNPCI y las NFPA adoptadas. & Pasillos en cubierta, rotulación y, si se solicita, revisión de planos.\\
+Municipalidad de Alajuela & Control urbano y licencias de construcción. & Clasificación del trámite (mantenimiento, permiso de construcción u otra categoría) por confirmar con Control Constructivo.\\
+UTN (propietaria) y TEC (usuario) & Propietario del inmueble y operador del edificio. & Autorización del propietario, definición del abonado, O\&M y seguridad interna.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Normas internacionales de producto y desempeño}
+El NEC exige equipos listados. El Cuadro~\ref{tab:normasint} resume las normas que se verificaron en las fichas técnicas.
+\begin{table}[H]
+\centering\small
+\caption{Normas internacionales usadas como referencia para los equipos.}\label{tab:normasint}
+\begin{tabularx}{\textwidth}{L{3.2cm}L{4.7cm}Y}
+\toprule
+\textbf{Componente} & \textbf{Norma (edición)} & \textbf{Verificación en el diseño}\\
+\midrule
+Módulos & IEC 61215-1/-2:2021; IEC 61730-1/-2:2023; UL 61730; IEC 61701; IEC 62716 & CS6W-580TB-AG declara UL 61730, IEC 61215 e IEC 61730; desempeño ante fuego UL 61730 tipo 29 \cite{csDatasheet}.\\
+Inversores & UL 1741 3.\textsuperscript{a} ed. (2021) con Supl. SB; IEEE 1547-2018 e IEEE 1547.1-2020; UL 1699B; IEC 62109-1/-2 & SE10KUS declara UL 1741/SA/SB, UL 1699B, IEEE 1547-2018 y apagado rápido NEC 2014--2023 \cite{seInv,ul1741,ieee1547}.\\
+Optimizadores (MLPE) & UL 1741 (equipo de apagado rápido); IEC 62109-1; NEC 690.11/690.12 & S650B declara UL 1741, IEC 62109-1 y cumplimiento PVRSS con NEC 2014/2017/2020 \cite{seOpt}.\\
+Estructura & UL 2703 (montaje y unión equipotencial) & S-5! PVKIT 2.0 listado UL 2703; el CS6W-xxxTB-AG figura en su tabla de cargas UL 2703 \cite{s5manual}. Orejetas de tierra listadas UL 2703 en cada marco.\\
+Conectores & IEC 62852 / UL 6703 & Familia Stäubli MC4 en módulo y optimizador. No se mezclan marcas.\\
+Conductores DC & UL 4703 (PV Wire) & PV Wire \#10, \SI{1}{\kilo\volt} o más, \SI{90}{\celsius}, resistente a UV.\\
+Supresores (SPD) & UL 1449 (4.\textsuperscript{a} ed. o posterior); IEC 61643-31 (DC FV) & SPD tipo 2 en DC y AC integrados en cada SE10KUS \cite{seInv}; SPD-AC tipo 2 adicional en el TFV.\\
+Interruptores & UL 489; UL 98 (desconectadores) & QOB335 y PowerPact HDL36070 (UL 489); HU363RB (UL 98).\\
+Incendio y rayo & NFPA 70 (2020); NFPA 1 (2012); NFPA 780 (2023), Anexo L & Pasillos, apagado rápido y evaluación simplificada del riesgo por rayo (sección~\ref{sec:rayo}) \cite{nfpa70,nfpa1,nfpa780}.\\
+Desempeño & IEC 62446-1:2016+A1:2018; IEC 61724-1:2021 & Pruebas de puesta en marcha y monitoreo de energía \cite{iec62446}.\\
+Almacenamiento & UL 9540 / UL 9540A & No aplica: el sistema no tiene baterías.\\
+Corrosión & ISO 9223:2012 & Categoría C2--C3 \supuesto{}: herrajes de acero inoxidable y aluminio; Cu estañado en contacto con el arreglo.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Verificación de edición y vigencia}
+\begin{table}[H]
+\centering\small
+\caption{Vigencia de los documentos nacionales utilizados (consulta: 2 y 3 de octubre de 2026).}\label{tab:vigencia}
+\begin{tabularx}{\textwidth}{L{5.2cm}L{3.6cm}Y}
+\toprule
+\textbf{Documento} & \textbf{Edición o versión} & \textbf{Estado y alcance}\\
+\midrule
+Ley N.\textsuperscript{o} 10086 & 2021 & Vigente; sin reformas identificadas al 3 oct 2026 (MINAE, ICE). RED renovables.\\
+Decreto 43879-MINAE (reglamento) & 2023 & Vigente; lo cita el ICE.\\
+Código Eléctrico (RTCR 458:2011) & NEC 2020 & Vigente (aviso de La Gaceta 126, 2024).\\
+AR-RT-POASEN & Reforma integral 2026 & Publicada en La Gaceta el 4 may 2026; vigente desde el 4 jun 2026.\\
+ICE DC-03-IT-21-001 & Versión 2, marzo de 2025 & Vigente según el portal del ICE. Apartados 5.4.7--5.4.15, 5.5.4 y 5.7 aplicados.\\
+ICE DC-03-PR-21-001 & v2.2 & Guía de trámite.\\
+Pliego tarifario del ICE & 2026 (Alcance 161, Gaceta 236) & Rige del 1 ene al 31 dic 2026. ARESEP archivó el 26 ago 2026 el ajuste extraordinario, sin cambio de tarifas.\\
+Tarifas RED del ICE & Julio 2026 (RE-0031-IE-2026) & Actualizado el 29 jul 2026; montos sujetos a IVA.\\
+RNPCI (Decreto 37615-MP) & Reforma 43733 (2022) & Vigente; adopta NFPA 1 (2012).\\
+Lineamientos de viento CFIA & 2023 & Vigente y obligatorio. Zona III para todo el cantón de Alajuela; normativa complementaria: ASCE/SEI 7-10 (Anexo D).\\
+Atlas de radiación del IMN (Castro) & 1987 & Fuente oficial histórica; se compara con una segunda estación.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+No se usaron versiones derogadas. En particular, el NEC 2008 ya no es la base del Código Eléctrico, y el reglamento anterior de generación distribuida para autoconsumo (2015) fue sustituido por el marco de la Ley 10086.
+
+\textbf{Limitación de la verificación de vigencia.} El MEIC divulgó en noviembre de 2024 un texto de decreto relativo al Código Eléctrico \cite{meic2024}. No fue posible confirmar en el SCIJ si ese texto llegó a publicarse como decreto. Por lo tanto, este diseño se basa en el RTCR 458 con la NFPA 70 (NEC 2020), cuya vigencia consta en La Gaceta N.\textsuperscript{o} 126 de 2024 \cite{gacetaNEC}. Antes de una implementación real debe confirmarse que no exista un reglamento posterior que lo sustituya.
+
+% =====================================================================
+\section{Comparación entre tipos de instalación}
+\label{sec:comparacion}
+Antes de desarrollar el caso, el Cuadro~\ref{tab:comparacion} compara las medidas que normalmente exigen la normativa y la práctica en una vivienda, una cubierta comercial o industrial y un terreno abierto.
+
+{\small
+\begin{longtable}{L{2.3cm}L{4.0cm}L{4.1cm}L{4.0cm}}
+\caption{Medidas particulares según el tipo de instalación.}\label{tab:comparacion}\\
+\toprule
+\textbf{Aspecto} & \textbf{Vivienda} & \textbf{Cubierta comercial o industrial (caso)} & \textbf{Terreno abierto}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Aspecto} & \textbf{Vivienda} & \textbf{Cubierta comercial o industrial (caso)} & \textbf{Terreno abierto}\\
+\midrule\endhead
+Interconexión & Monofásica 120/240~V. Normalmente regla del 120\,\% en el tablero residencial (NEC 705.12). & Trifásica 208 o 480~V. Hay transformadores, ATS y generadores; se aplica la regla de alimentadores y suele requerirse estudio de la distribuidora. & Alimentador o transformador dedicado, a veces en media tensión. Requiere estudio de capacidad de penetración del circuito.\\
+Apagado rápido & Obligatorio (NEC 690.12, sistema sobre edificio). & Obligatorio (NEC 690.12). & No aplica si el arreglo no está sobre un edificio. Se exige cercado y acceso restringido.\\
+Acceso de Bomberos & NFPA 1 §11.12 residencial: pasillos de \SI{0.9}{\meter} y retiro de cumbrera. & NFPA 1 §11.12: perímetro de 1,2--1,8~m, pasillos de \SI{1.2}{\meter} y arreglos de 46~m como máximo. & Vías de acceso vehicular, control de vegetación y distancias a linderos.\\
+Estructura & Cerchas livianas; penetraciones e impermeabilización. & Viento en zonas de borde y esquina (CFIA), fijación a junta alzada y capacidad de clavadores y cerchas. & Cimentación (hincado o tornillo), estudio de suelos, drenaje y erosión; sismo y viento sobre la estructura.\\
+Seguridad física & Riesgo para ocupantes; mantenimiento ocasional. & Trabajo en altura, líneas de vida y coordinación con el mantenimiento de equipos de techo. & Cercado, vigilancia, vandalismo y tránsito de vehículos.\\
+Puesta a tierra y rayo & Electrodo residencial; SPD en el tablero. & Malla existente del edificio, SPD coordinados y evaluación NFPA 780. & Malla propia del parque; mayor exposición a rayos.\\
+Sombras y suciedad & Árboles y vecinos. & Equipos de techo, parapetos y ductos. & Sombra entre filas, vegetación, polvo y ganado.\\
+Trámites & CFIA y distribuidora con trámite simplificado. & CFIA, distribuidora con estudio, posible revisión de Bomberos y permiso municipal. & Además: uso de suelo, viabilidad ambiental y servidumbres.\\
+\bottomrule
+\end{longtable}}
+
+Se eligió una \textbf{cubierta institucional} por tres razones: se dispone de un juego completo de planos as-built, no se ocupa terreno adicional y el consumo diurno del edificio coincide con la generación. Como contrapartida, este caso exige resolver condiciones que en una vivienda no aparecen: la coexistencia con un generador y un ATS, la presencia de condensadoras sobre la cubierta y los pasillos de Bomberos.
+
+% =====================================================================
+\section{Análisis del emplazamiento}
+\subsection{Ubicación, uso y empresa distribuidora}
+\begin{table}[H]
+\centering\small
+\caption{Datos generales del emplazamiento.}\label{tab:sitio}
+\begin{tabularx}{\textwidth}{L{4.6cm}Y}
+\toprule
+Provincia / cantón & Alajuela / Alajuela (Central)\\
+Ubicación & Sede Central de la UTN, Villa Bonita de Alajuela. El TEC la ubica en Desamparados de Alajuela, a unos 960~msnm \cite{tecSitio}.\\
+Coordenadas & 10,0057\,°N; 84,2164\,°O. Promedio de las posiciones GPS de 15 fotografías tomadas alrededor del edificio el 5 de octubre de 2026 (Anexo~\ref{sec:fotos}); precisión típica de un teléfono, unos \SI{10}{\meter}.\\
+Registro de la propiedad & Propietario: Universidad Técnica Nacional; catastro A-652521-2000; folio real 2-363445-000 (cajetín de los planos)\\
+Uso & Académico y administrativo: oficinas, aulas, cuarto de servidores y DATIC\\
+Distribuidora & ICE. Transformador de pedestal N.\textsuperscript{o} 119688, 750~kVA, 34,5~kV/480Y/277~V (lámina E01)\\
+Tipo de instalación & FV sobre cubierta institucional, interconectada para autoconsumo con excedentes\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La lámina FV-00 (Fig.~\ref{fig:fv00}) ubica el edificio dentro del campus. También muestra el transformador del ICE, el nicho del interruptor de 480~V, la acometida de unos 100~m, el generador, la malla de tierra y el cuarto eléctrico.
+
+\subsubsection*{Imagen satelital y registro fotográfico}
+El enunciado solicita fotografías o imágenes satelitales que permitan caracterizar el sitio. La caracterización de este documento se basa en los planos as-built \cite{planos}; las imágenes siguientes complementan esa información y sirven para confirmar la orientación, las sombras del entorno y la posición de los equipos existentes.
+
+La Fig.~\ref{fig:satelital} muestra la imagen satelital del edificio y su entorno. La escala se estimó en unos \SI{0.15}{\meter} por píxel a partir de las dimensiones conocidas de la cubierta (A04), y se supone que la imagen está orientada con el norte hacia arriba, como es habitual en Google Maps.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{figuras/satelital_caa.png}
+\caption{Imagen satelital del edificio CAA-TEC y su entorno \cite{gmaps}. Anotaciones propias: contorno aproximado de la cubierta, rumbos de sus bordes, obstáculos cercanos y distancias aproximadas al borde de la cubierta. Escala estimada a partir de las dimensiones de la lámina A04.}
+\label{fig:satelital}
+\end{figure}
+
+La imagen aporta tres datos que los planos no contienen:
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Orientación real.} Los bordes de la cubierta tienen rumbos de unos \SI{60}{\degree} y \SI{150}{\degree}: el edificio está girado unos \SI{30}{\degree} respecto a los puntos cardinales. La deducción hecha a partir de las fachadas de A02 (eje A al Sur) supone ejes alineados con los puntos cardinales, por lo que el azimut real de la caída de la cubierta no es \SI{90}{\degree}, sino aproximadamente \SI{60}{\degree} (ENE) o \SI{150}{\degree} (SSE). La imagen no permite distinguir el sentido de la pendiente, de modo que ambos casos se evalúan en la sección~\ref{sec:energia}.
+\item \textbf{Obstáculos del entorno.} Hay árboles a unos 15~m al ONO, a unos 14~m al ESE y S, y un árbol aislado a unos 17~m al SSO del borde de la cubierta. La nave de la UTN está unos 24~m al Este; aun si fuera 4~m más alta que la cubierta, solo la sombrearía con el sol a menos de unos 9° de elevación, al amanecer. Hacia el Norte hay un edificio de la UTN y un árbol al otro lado de la calle interna, que no producen sombra relevante porque el sol pasa por el Norte únicamente entre abril y agosto, a gran altura.
+\item \textbf{Estado de la cubierta.} La cubierta es de color claro y sin instalaciones fotovoltaicas existentes, lo que concuerda con la lámina esmaltada en blanco que especifican los planos.
+\end{enumerate}
+
+\textbf{Registro fotográfico (5 de octubre de 2026).} Se tomaron 42 fotografías de las fachadas y del cuarto eléctrico; las que aportan información al diseño se reproducen en el Anexo~\ref{sec:fotos}. Las fotografías guardan la posición GPS y el rumbo de la cámara, con los que se obtuvieron las coordenadas del Cuadro~\ref{tab:sitio} y se comprobó la orientación. Aportan cuatro datos nuevos:
+\begin{enumerate}[label=(\alph*),resume]
+\item \textbf{Sentido de la pendiente.} La fachada con las condensadoras a nivel de cubierta, es decir, el extremo alto (eje 01), mira hacia unos 236° (Fig.~\ref{fig:foto_oeste}). La fachada de la torre del ascensor, en el extremo bajo (ejes 16--17), mira hacia unos 47° (Fig.~\ref{fig:foto_este}). En la fachada larga del eje N, el borde de la cubierta baja de oeste a este (Fig.~\ref{fig:foto_norte}). Por lo tanto la cubierta cae hacia el ENE y el azimut real es de unos \textbf{60°}; se descarta el caso de 150°. Los rumbos de una brújula de teléfono tienen una incertidumbre de unos $\pm$\SI{10}{\degree}, por lo que se conserva el valor de 60° medido en la imagen satelital.
+\item \textbf{Árboles.} Los árboles cercanos al edificio tienen la copa aproximadamente a la altura del alero (Fig.~\ref{fig:foto_arbol}), por lo que el escenario representativo es el de árboles hasta 4~m más altos que la cubierta.
+\item \textbf{Fachada sur.} El muro donde se proponen los inversores es liso, tiene los registros de la malla de tierra al pie y una condensadora de piso junto a él (Figs.~\ref{fig:foto_sur} y \ref{fig:foto_sur2}), lo que concuerda con E01 y con la ruta AC de la lámina FV-02.
+\item \textbf{Placas de los equipos del cuarto eléctrico.} Se describen en la sección~\ref{sec:existente}.
+\end{enumerate}
+No se tuvo acceso a la cubierta, ni se fotografiaron la placa del generador o el medidor del ICE. Para esos datos se adoptan los supuestos de diseño del Cuadro~\ref{tab:supuestos} (sección~\ref{sec:otras}).
+
+\begin{landscape}
+\thispagestyle{lscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{laminas/FV-00.pdf}
+\caption{Lámina FV-00 (A3): plano general de ubicación del sistema FV sobre la planta E01 (as-built).}
+\label{fig:fv00}
+\end{figure}
+\end{landscape}
+
+\subsection{Cubierta: dimensiones, orientación e inclinación}
+Según la planta de techos A04 y la planta estructural S10, la cubierta principal tiene estas características:
+\begin{itemize}
+\item \textbf{Forma y dimensiones:} una sola agua, \SI{15.05}{\meter} entre aleros en la dirección de los ejes A--N y \SI{18.0}{\meter} en la dirección de los ejes 03--17. Las cotas se tomaron de A04 y se contrastaron con la distancia entre ejes estructurales de S10 (\SI{17.80}{\meter}).
+\item \textbf{Inclinación:} pendiente del 15\,\%, equivalente a $\theta=\tan^{-1}(0{,}15)=\SI{8.53}{\degree}$.
+\item \textbf{Orientación:} en las fachadas de A02, la Fachada Sur muestra los ejes 01 a 17 de izquierda a derecha, con el punto alto en el eje 01 y el bajo en el 17. La Fachada Este muestra los ejes A a N. De ahí se deduce el \emph{norte de proyecto} de las láminas: eje A al Sur, eje N al Norte y caída de la cubierta hacia el Este (azimut nominal de \SI{90}{\degree}). La planta A04 no tiene flecha de norte. La imagen satelital (sección~5.1, Fig.~\ref{fig:satelital}) muestra que el edificio está girado unos 30° respecto a los puntos cardinales, y el registro fotográfico confirma que la cubierta cae hacia el ENE: el azimut real es de unos \textbf{60°}, que es el \textbf{caso de cálculo}. El azimut nominal de 90° se conserva como sensibilidad ($+1{,}0$\,\%, sección~\ref{sec:energia}).
+\item \textbf{Material:} lámina SOLCON SSP380 tipo junta alzada, compuesta por láminas de HG \#24 y un núcleo de 1,5'' de poliisocianurato, esmaltada en color blanco.
+\end{itemize}
+
+A una latitud de \SI{10}{\degree} N, una orientación al ENE con apenas 8,5° de inclinación pierde menos del 2\,\% de irradiación respecto a la horizontal (sección~\ref{sec:energia}). Por eso se adopta un montaje coplanar, sin estructuras de inclinación que aumentarían la carga de viento.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.78\textwidth]{figuras/planta_techo.png}
+\caption{Planta de techos A04 (as-built). Se ven la pendiente del 15\,\%, las losas de concreto de las condensadoras (en cian), las huellas de mantenimiento y la pasarela de acceso.}
+\label{fig:planta_techo}
+\end{figure}
+
+\subsection{Áreas excluidas, accesos y rutas de mantenimiento}
+Del área bruta de la cubierta, de unos \SI{270}{\meter\squared}, se excluyen las siguientes zonas:
+\begin{enumerate}[label=(\alph*)]
+\item Las losas de concreto de las condensadoras de aire acondicionado, entre los ejes 01 y 04 (C--K). Según las láminas M1--M04, hay 19 unidades condensadoras listadas (UC-01, UC-02) y una ``planta de distribución de equipos de A/C -- losa techos''.
+\item La losa sobre el ducto del ascensor (G--J, ejes 16--17) y la losa sobre el ducto de escalera (eje N, ejes 14--16).
+\item La pasarela de acceso a las losas de A/C (eje B, ejes 03--05) y las huellas de mantenimiento que rodean la cubierta (líneas rojas de A04).
+\item El pasillo perimetral de \SI{1.2}{\meter} que exige NFPA 1 §11.12.
+\item Una franja de sombra y mantenimiento de \SI{3.24}{\meter} al pie de las losas de condensadoras.
+\end{enumerate}
+
+Al descontar estas zonas queda un área útil continua de unos \SI{12.6}{\meter} $\times$ \SI{11.6}{\meter}. El acceso a la cubierta se hace por la pasarela existente. El trabajo en altura requiere línea de vida o anclajes certificados (sección~\ref{sec:riesgos}).
+
+\subsection{Estructura de techo}
+La lámina S10 muestra la estructura de la cubierta:
+\begin{itemize}
+\item Cerchas metálicas tipo 1 a 6 con perfiles HSS (75$\times$75$\times$3,18; 100$\times$100$\times$3,18; 100$\times$150$\times$1,8; 150$\times$150$\times$4,8; 100$\times$200$\times$3,18~mm).
+\item Clavadores de perfil C 150$\times$50$\times$2,37~mm a cada \SI{1.2}{\meter}.
+\item Tensores de varilla lisa \#4.
+\item La cercha 1 cubre \SI{15.80}{\meter}, con alturas de \SI{3.21}{\meter} en el eje 04 y \SI{0.75}{\meter} en el eje 16.
+\end{itemize}
+
+Los planos permiten identificar el sistema resistente, pero \textbf{no declaran una capacidad residual disponible} para cargas fotovoltaicas. Por eso el presente trabajo solo verifica de forma conceptual la carga agregada y el viento (sección~\ref{sec:estructura}). No se asume ninguna capacidad de carga.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/estructura_techo.png}
+\caption{Lámina S10: planta estructural de techos, cerchas, clavadores a \SI{1.2}{\meter} y tabla de tubos HSS.}
+\end{figure}
+
+\subsection{Sombras}
+\label{sec:sombras}
+Se identificaron estos obstáculos:
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{Condensadoras sobre las losas de los ejes 01--04,} al OSO del arreglo (azimut de unos 240°) y en la parte alta de la cubierta. Se supone una altura de \SI{1.5}{\meter} entre la condensadora y su base \supuesto{}. A eso se suma la caída de la cubierta (15\,\% sobre \SI{3.24}{\meter}), lo que da un desnivel efectivo de \SI{1.99}{\meter}. La fila S1 se sombrea cuando el ángulo de perfil del sol, medido en el plano de la pendiente desde el OSO, es menor que $\psi=\tan^{-1}(1{,}99/3{,}24)=\SI{31.5}{\degree}$. Esto ocurre solo al final de la tarde.
+\item \textbf{Losa sobre el ducto del ascensor} (eje 16), al ENE y más abajo que el arreglo. Solo produciría sombra con el sol a menos de unos 12° de altura por la mañana, por lo que su efecto es despreciable.
+\item \textbf{Losa de la escalera} (eje N), al Norte. Solo podría sombrear con el sol al Norte, entre abril y agosto, cuando está muy alto. También es despreciable.
+\item \textbf{Árboles y edificios de la UTN.} Se modelan con los sectores y distancias medidos en la imagen satelital y con la altura estimada en las fotografías (párrafo siguiente). Además se conserva una reserva del 1\,\% \supuesto{} para obstáculos menores no modelados (postes, crecimiento de los árboles).
+\end{enumerate}
+
+\textbf{Sombras del entorno según la imagen satelital.} Los árboles están en los sectores ONO (280--315°, a unos 15~m), ESE-S (100--180°, a unos 14~m) y SSO (190--210°, a unos 17~m). Las fotografías muestran la copa cerca de la altura del alero, por lo que el caso de cálculo supone árboles 4~m más altos que la cubierta \supuesto{}, equivalentes a obstáculos de 13--16° de elevación. El programa \texttt{calc/energia.py} bloquea la radiación directa sobre todo el arreglo cuando el sol está detrás de esos obstáculos. La pérdida resulta de solo \textbf{0,1\,\%}; con árboles 10~m más altos (30--36°) sería de 1,9\,\% (Cuadro~\ref{tab:sensib_sitio}), lo que no cambia ninguna decisión del diseño. La sombra es pequeña porque, a 10° de latitud, el sol de las horas de mayor producción está alto y los árboles quedan a más de 14~m.
+
+El modelo horario de la sección~\ref{sec:energia} estima una pérdida anual del \textbf{0,2\,\%} por las condensadoras. Este resultado justifica la separación de \SI{3.24}{\meter}. Además, los optimizadores limitan el efecto de la sombra parcial al módulo afectado.
+
+\subsection{Condiciones ambientales}
+\begin{table}[H]
+\centering\small
+\caption{Condiciones ambientales de diseño.}\label{tab:clima}
+\begin{tabularx}{\textwidth}{L{3.6cm}L{4.6cm}Y}
+\toprule
+\textbf{Variable} & \textbf{Valor} & \textbf{Fuente o comentario}\\
+\midrule
+Radiación global horizontal & \SI{19}{\mega\joule\per\meter\squared} al día (\SI{5.28}{\kilo\watt\hour\per\meter\squared} al día); 16--24 según el mes & IMN, estación Aeropuerto Juan Santamaría, 932~m, a unos 3~km del sitio \cite{imnRad}\\
+Temperatura media anual & \SI{22.3}{\celsius} & TEC \cite{tecSitio}\\
+Temperatura mínima de diseño & \SI{5}{\celsius} & \supuesto{} conservador: menor que las temperaturas mínimas que se registran en el Valle Central por debajo de 1000~m, por lo que sobrestima $V_{oc}$.\\
+Temperatura máxima de celda & \SI{70}{\celsius} & Montaje coplanar cercano a la lámina (modelo SAPM)\\
+Precipitación & \SI{2069}{\milli\meter} al año & TEC \cite{tecSitio}. Estación seca de diciembre a abril.\\
+Humedad relativa & 70--85\,\% & \supuesto{}; los equipos admiten 0--100\,\%\\
+Viento & Zona III (todos los distritos del cantón de Alajuela); $V_b$ = \SI{115}{\kilo\meter\per\hour} para $T_R=50$~años & CFIA 2023, Tabla 3-1 y Figura 3-1 \cite{cfiaViento}; ver sección~\ref{sec:estructura}.\\
+Corrosión & C2--C3 (ISO 9223) & \supuesto{} ambiente urbano interior, lejos de la costa\\
+Inundación & No aplica & Equipos en cubierta y en la fachada sur, sobre la rasante exterior\\
+Suciedad & Moderada (polvo en la estación seca y poca autolimpieza a 8,5°) & Pérdida del 3\,\% \supuesto{} y plan de limpieza\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Sistema eléctrico existente}
+\label{sec:existente}
+El unifilar as-built (lámina E07, Fig.~\ref{fig:unifilar_existente}) muestra la siguiente cadena de alimentación. Los datos marcados con (F) se verificaron en las placas y rótulos del cuarto eléctrico (Anexo~\ref{sec:fotos}); cuando lo instalado difiere de los planos, se usa el dato de placa.
+\begin{enumerate}
+\item Transformador del ICE N.\textsuperscript{o} 119688, 750~kVA, 34,5~kV/480Y/277~V.
+\item Interruptor Schneider JDL36200, 200~A, 3P, 18~kA, 480~V, en el nicho del transformador. Es el punto de conexión de la acometida del CAA.
+\item Acometida de 100~m (1\#4/0 Cu por fase).
+\item Interruptor principal del edificio \textbf{IP}: interruptor en caja moldeada Square D en gabinete, 277/480~V trifásico, ``alimentado desde IP-Acometida TEC'' con 1\#4/0 por fase + T\#1/0 (F). El rótulo superior indica que alimenta al transformador. La corriente nominal de la unidad de disparo no es legible en la foto; se adoptan los 200~A de los planos \supuesto{}, coherentes con el interruptor JDL36200 que lo alimenta.
+\item Transformador seco \textbf{TS-01} (rotulado ``TX'' en sitio): Square D EXN112T3H, 112,5~kVA, 480$\Delta$--208Y/120~V, 135,3~A en el primario y 312,3~A en el secundario, \textbf{impedancia de 3,57\,\%}, aislamiento clase 220~°C, listado UL (F).
+\item Alimentador de 2 juegos de (3\#4/0 + N\#4/0 + T\#1/0) Cu THHN/THWN-2. El rótulo del ATS confirma ``2\,$\times$\,\#4/0 (F+N) + 2\,$\times$\,\#1/0 (T)'' desde TX (F).
+\item \textbf{ATS} (rótulo TA-GR): Kohler \textbf{KSS-ACTC-0400S}, 400~A, 3F, 208~V, NEMA 3R, UL 1008, controlador MPAC 1200, alimentado desde TX y la planta eléctrica (F). Los planos indican KSS-ACTA-0400S. En la entrada de emergencia está el generador Kohler exterior (F, Fig.~\ref{fig:foto_este}); E07 lo especifica como Kohler-SDMO J100U-IV de \SI{100}{\kilo\watt} standby.
+\item Multimedidor digital interno.
+\item \textbf{Tablero principal TP:} según la placa y el cuadro de circuitos (F), es un Square D \textbf{HCP32688} de Schneider Electric con barras de \textbf{800~A}, 120/208~V, 42 polos e interruptor principal \textbf{LA36400} de 400~A, con supresor de 100~kA. Los planos (E07--E09) lo especificaban como Eaton PRL-2A de 400~A y 30 espacios con principal DK3400L; lo instalado prevalece.
+\end{enumerate}
+
+\textbf{Distribución física (lámina E01).} La planta de E01 muestra el interior del cuarto eléctrico, que está en los ejes A--C / 14--16 con piso a NPT 0+190,00, unos 2,3~m por debajo de la rasante exterior. Contra el muro del eje A están TM-UPS, TS-01, el ATS (TA-GR) y el TP. Contra el muro del cuarto de DATIC están los tableros TN1, TI1, TRU1 y TD1, y la UPS ocupa el centro. La malla de tierra tiene registros G-01 a G-05 al sur del edificio, y la acometida llega por el registro CRE-01.
+
+\textbf{Discrepancia en el generador.} E01 rotula el generador exterior como GR-01 de 55~kVA, mientras que E07 lo especifica como Kohler-SDMO J100U-IV de 100~kW. El registro fotográfico confirma que es un grupo Kohler en cabina, instalado junto a la fachada de acceso. Se adopta el dato de E07 \supuesto{}, porque el unifilar es el documento de diseño eléctrico y es coherente con el ATS de 400~A. La diferencia no afecta la conexión FV, que queda del lado normal del ATS.
+
+\textbf{Cargas:} la carga total estimada es de \SI{129.27}{\kilo\volt\ampere} y la demandada de \SI{110.29}{\kilo\volt\ampere}.
+
+\textbf{Ocupación del TP (cuadro de circuitos en sitio, Fig.~\ref{fig:foto_tp_cuadro}):} TI1 (50~A/3P), TN2, TAC2 y TAC3 (70~A/3P cada uno), supresor de transitorios Square D XDSE (30~A/3P), TAC1 (100~A/3P), TN1 (70~A/3P), transferencia manual de la UPS (100~A/3P), TRU (90~A/3P) y una ``prevista'' de 100~A/3P. Quedan \textbf{libres los circuitos 1 y 3 y los espacios 2 a 12}. Los planos sugerían un TP de 30 polos sin espacios libres; el tablero instalado tiene capacidad de reserva. La existencia de espacios no cambia la decisión de interconexión (sección~\ref{sec:interconexion}).
+
+\textbf{Otros equipos verificados (F):} UPS Ablerex KRONOS UL20D (20~kVA, 208/120~V, listada UL) alimentada desde el TP a través de la transferencia manual Eaton TM-UPS (100~A, doble tiro); supresores Square D SurgeLogic en los tableros derivados (por ejemplo, SDSA2040 en TRU); y una caja ``Medidor de energía'' alimentada desde TRU, que corresponde al multimedidor interno del edificio.
+
+\textbf{Puesta a tierra:} la malla de tierra está especificada con un valor máximo de \SI{5}{\ohm}, con varillas de cobre de 19~mm $\times$ 3~m y uniones exotérmicas (láminas E02--E06 y E10--E11). En las láminas eléctricas no se encontró un sistema de pararrayos.
+
+\textbf{Medición del ICE:} ninguna de las láminas E01--E11 muestra el medidor de facturación. La lámina E01 indica que la acometida del CAA se \emph{agregó a un nicho existente} junto al transformador N.\textsuperscript{o} 119688, donde está el interruptor de 200~A en 480~V. El registro fotográfico refuerza esa hipótesis: el interruptor principal del edificio está rotulado ``alimentado desde IP-Acometida TEC'' y en el cuarto eléctrico no hay un medidor del ICE (la caja ``Medidor de energía'' es el multimedidor interno). Por eso se adopta como supuesto de diseño una \textbf{medición indirecta (con transformadores de corriente) en 480~V, en ese nicho} \supuesto{}, que es lo usual para un servicio de 200~A en 480~V. El dato importa porque el medidor debe ser bidireccional y porque, con medición indirecta, el ICE cotiza el equipo aparte (sección~\ref{sec:normativa}); ese costo se incluye en la evaluación económica dentro de los cargos de interconexión y la inversión. La ubicación adoptada se marca en las láminas FV-00 y FV-03.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figuras/unifilar_existente_bn.png}
+\caption{Unifilar existente (E07), reproducido en alto contraste: transformador ICE, TS-01, ATS con generador, multimedidor y TP.}
+\label{fig:unifilar_existente}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/acometida.png}
+\caption{Lámina E01: transformador ICE N.\textsuperscript{o} 119688, nicho del interruptor de 480~V y canalización de la acometida.}
+\end{figure}
+
+\subsection{Perfil de consumo y modalidad de operación}
+\label{sec:consumo}
+No se dispone de facturas del NISE. El consumo se estimó a partir de los cuadros de carga y de un perfil típico de edificio académico \supuesto{}:
+\begin{itemize}
+\item Demanda media diurna de \SI{35}{\kilo\watt} en días lectivos (7:00--19:00).
+\item Carga base de \SI{8}{\kilo\watt} (servidores, DATIC y su aire acondicionado, UPS).
+\item 250 días lectivos y 115 días no lectivos al año.
+\end{itemize}
+\begin{equation}
+E_{cons}\approx 250\,(12\cdot 35+12\cdot 8)+115\,(24\cdot 8)=\SI{151}{\mega\watt\hour\per\anio}.
+\end{equation}
+
+Con estas cifras, el sistema FV cubriría alrededor del \textbf{20\,\%} del consumo ($31{,}0/151$). En días lectivos la demanda (unos \SI{35}{\kilo\watt}) supera la potencia FV pico (unos \SI{17}{\kilo\watt} AC), por lo que toda la generación se autoconsume. En fines de semana y feriados, la carga base es menor que la generación del mediodía. Se estiman excedentes del orden del 10\,\% de la producción anual. Por eso se elige la \textbf{modalidad interconectada con inyección de excedentes}.
+
+En la operación, el perfil se puede contrastar con la curva de demanda del multimedidor existente, que registra perfiles de carga y cuya existencia se confirmó en sitio (Fig.~\ref{fig:foto_med}).
+
+\textbf{Limitación.} No fue posible obtener la facturación del NISE. Por lo tanto, el consumo anual, la cobertura del 20\,\% y la tarifa aplicada son estimaciones. La tarifa se infiere de la normativa: el pliego del ICE asigna la tarifa T-CS (preferencial de carácter social) a las instituciones de educación pública \cite{icePliego}, y un consumo del orden de 12\,000~kWh al mes ubica al edificio en el bloque de más de 3000~kWh, con cargos de energía y de demanda. Se supone que el servicio del ICE es exclusivo del edificio y que el abonado es el TEC \supuesto{}, como indica el rótulo ``IP-Acometida TEC''. La conclusión de viabilidad es poco sensible al consumo exacto: cualquier consumo mayor de unos \SI{35}{\mega\watt\hour} al año (menos de la cuarta parte del estimado) permitiría autoconsumir casi toda la generación.
+
+\subsection{Otras condiciones y supuestos de diseño}
+\label{sec:otras}
+\begin{itemize}
+\item \textbf{Estructural:} no existe certificación de la capacidad residual. Conforme al enunciado, no se asume ninguna capacidad de carga: se calcula la carga agregada y la succión, y la viabilidad queda condicionada al dictamen de un ingeniero estructural.
+\item \textbf{Operativa:} el edificio tiene generador y UPS. El sistema FV no debe alimentar cargas mientras opera el generador.
+\item \textbf{Titularidad:} el inmueble es de la UTN y lo opera el TEC. Se adopta que el abonado del ICE es el TEC \supuesto{}; la UTN autoriza la obra como propietaria.
+\item \textbf{Municipal y ambiental:} no se identifican restricciones de uso de suelo, porque la instalación se hace sobre una edificación existente.
+\end{itemize}
+
+Ya no es posible obtener más información del edificio. Los datos faltantes se completan con los supuestos del Cuadro~\ref{tab:supuestos}. Cada uno se eligió de forma coherente con los planos, las fotografías y la normativa, y, cuando el dato afecta la seguridad, del lado conservador. La última columna indica qué ocurriría si el valor real fuera distinto.
+
+{\small
+\begin{longtable}{L{3.3cm}L{5.0cm}L{6.6cm}}
+\caption{Supuestos de diseño adoptados (marcados con \supuesto{} en el texto).}\label{tab:supuestos}\\
+\toprule
+\textbf{Dato} & \textbf{Valor adoptado y fundamento} & \textbf{Efecto si el valor real difiere}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Dato} & \textbf{Valor adoptado y fundamento} & \textbf{Efecto si el valor real difiere}\\
+\midrule\endhead
+Medición del ICE & Indirecta (TC) en 480~V, en el nicho del transformador N.\textsuperscript{o} 119688 (E01: la acometida se agregó a ese nicho; no hay medidor en el cuarto eléctrico) & Ninguno sobre el diseño FV: el ICE instala el medidor bidireccional donde esté la medición. Solo cambia el costo del medidor.\\
+Abonado y tarifa & TEC, servicio exclusivo del edificio, tarifa T-CS en el bloque de más de 3000~kWh (pliego del ICE para educación pública) & Con tarifa T-CO el retorno mejora (escenario C). Un servicio monómico (con tarifa de acceso) no es coherente con el consumo estimado; se evalúa solo como sensibilidad hipotética (escenario B, sección~\ref{sec:viabilidad}).\\
+Consumo & \SI{151}{\mega\watt\hour\per\anio}, perfil típico de edificio académico & Cualquier consumo mayor de unos 35~MWh/año permite autoconsumir casi toda la generación.\\
+Generador & Kohler J100U-IV, 100~kW (E07) & Ninguno: la conexión FV está del lado normal del ATS.\\
+Interruptor IP & 200~A en 480~V (planos; coherente con el JDL36200 aguas arriba) & Si fuera menor, 450.3(B) sigue cumpliéndose; la derivación ya no depende de este valor, porque se calcula con IS-TS01.\\
+Tramo TS-01--IS-TS01 & $\leq$ 3~m: IS-TS01 se monta en el muro del eje A junto a TS-01 (E01, fotografías) & Es una condición de instalación (NEC 240.21(C)(2)), no un dato incierto; se verifica en el levantamiento de obra.\\
+Perfil SSP380 & Costilla vertical de junta alzada, calibre HG 24, separación de 0,38~m (designación comercial) & Cambia el modelo de abrazadera S-5! (S-5-U por otro de la misma familia) y su número; la huella del arreglo no cambia.\\
+Árboles & 4~m más altos que la cubierta (copa a la altura del alero en las fotografías) & Con 10~m más, la producción baja 1,9\,\%.\\
+Categoría de diseño por viento & II (Especial): se supone una capacidad mayor de 300 estudiantes, grupo C del Código Sísmico (Tabla 2-1 del CFIA); exposición C & Si el ingeniero estructural la clasifica como III (Normal), las presiones bajan (servicio con $T_R=10$~años y último con $T_R=700$~años); la categoría II es la envolvente.\\
+Temperaturas & Mínima de 5~°C; celda máxima de 70~°C & Valores conservadores para $V_{oc}$ e $I_{sc}$.\\
+Rayo & $N_g$ = 15 rayos/km$^2$ por año & La conclusión (recomendar un sistema de protección) se mantiene para cualquier $N_g$ mayor de 1,2.\\
+Ocupación & Educativa y de oficinas, sin recintos de reunión de 100 o más personas & Si los tuviera, se agrega la verificación UVIE quinquenal (RTCR 458, art. 5.2).\\
+Ajuste del ATS & Retardo de detección de falla de la fuente normal de 3~s & Debe ser mayor que el tiempo de cese de los inversores (2~s).\\
+Económicos & Inversión de USD 1,10/Wp, ₡505/USD, O\&M, tasa de 8\,\% y degradación de 0,4\,\% & Ver la sensibilidad del Cuadro~\ref{tab:sensib}.\\
+\bottomrule
+\end{longtable}}
+
+% =====================================================================
+\section{Criterios de diseño}
+\begin{enumerate}[leftmargin=1.2cm]
+\item Sistema interconectado para autoconsumo con excedentes, sin baterías: el edificio ya tiene respaldo con generador y UPS.
+\item Potencia limitada por el área útil después de las exclusiones normativas (\SI{20.88}{\kWp}) y no por el consumo, que es unas cinco veces mayor que la producción.
+\item Todos los equipos con listado UL y certificación de interconexión IEEE 1547-2018/UL 1741 SB declarada por el fabricante, sujeta al informe de verificación documental ICE-LEE/ECA que exige el ICE para su admisibilidad.
+\item Inversores configurables como DER de categoría B del ICE (modos de control obligatorios y volt-var por defecto) y con comunicación por protocolo abierto para el SCADA del ICE si el abonado es binómico.
+\item Apagado rápido a nivel de módulo, por estar el arreglo sobre un edificio.
+\item Montaje coplanar sin perforar la cubierta, dentro de la zona interior de viento.
+\item Interconexión del lado normal del ATS: ninguna fuente FV puede operar en paralelo con el generador. La conexión se hace sobre un alimentador protegido en su origen (IS-TS01), no sobre conductores secundarios protegidos solo en su extremo de carga.
+\item Caída de tensión menor de 1\,\% en DC y en AC.
+\item Inversores, TFV e IFV en la fachada sur (exterior, NEMA 3R), porque el muro interior del cuarto eléctrico ya está ocupado. La derivación y su protección (CD-FV) van en el interior, junto a TS-01. Espacio de trabajo según NEC 110.26.
+\end{enumerate}
+
+% =====================================================================
+\section{Selección de equipos}
+\label{sec:equipos}
+\subsection{Alternativas evaluadas}
+\begin{table}[H]
+\centering\small
+\caption{Comparación de alternativas comerciales.}\label{tab:alternativas}
+\begin{tabularx}{\textwidth}{L{2.0cm}L{4.0cm}YL{2.0cm}}
+\toprule
+\textbf{Equipo} & \textbf{Alternativa} & \textbf{Evaluación} & \textbf{Resultado}\\
+\midrule
+\multirow{2}{*}{Módulo} & Jinko JKM580N-72HL4-V (580~W) & Ficha F8 \cite{jinkoV}: IEC 61215/61730, sin UL 61730. No cumple NEC 690.4(B). & Descartado\\
+ & Canadian Solar CS6W-580TB-AG (580~W) & UL 61730 tipo 29, 1500~V, 22,5\,\%, viento hasta 4000~Pa \cite{csDatasheet}. & \textbf{Elegido}\\
+\midrule
+\multirow{3}{*}{Inversor} & Fronius Symo Advanced 10.0-3 208-240 (2 unid.) & IEEE 1547-2003 y UL 1741 SA \cite{fronius}. Sin evidencia de SB. Para el apagado rápido necesita racks UL 3741 o MLPE, y S-5! no está en su lista \cite{froniusUL3741}. & Descartado\\
+ & Fronius Symo Advanced 20.0-3 480 (conexión en 480~V) & MPPT de 450--800~V; declara UL 1741-2010 con Suplemento SA, IEEE 1547-2003 y NEC 2017, sin UL 1741 SB ni IEEE 1547-2018 \cite{fronius480,froniusMX}. Mismo problema de certificación. & Descartado\\
+ & SolarEdge SE10KUS 208~V (2 unid.) + S650B & La ficha declara UL 1741 SB e IEEE 1547-2018 (admisibilidad pendiente del informe ICE-LEE/ECA); apagado rápido integrado y monitoreo por módulo \cite{seInv,seOpt}. & \textbf{Elegido}\\
+\midrule
+\multirow{2}{*}{Montaje} & Rieles de aluminio con anclaje perforante & Perfora la cubierta sándwich y crea riesgo de filtraciones. & Descartado\\
+ & S-5! PVKIT 2.0 + abrazadera de junta alzada & Sin perforación, unión equipotencial UL 2703 y poco peso \cite{s5}. & \textbf{Elegido}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Módulo fotovoltaico: Canadian Solar CS6W-580TB-AG}
+\begin{table}[H]
+\centering\small
+\caption{Características del módulo (ficha V2.0C2, enero de 2025) \cite{csDatasheet}.}\label{tab:modulo}
+\begin{tabularx}{\textwidth}{L{5.4cm}Y}
+\toprule
+Función & Conversión fotovoltaica (TOPCon bifacial, vidrio-vidrio)\\
+$P_{max}$ / $V_{mp}$ / $I_{mp}$ (STC) & 580~W / 43,1~V / 13,46~A\\
+$V_{oc}$ / $I_{sc}$ (STC) & 52,2~V / 13,93~A\\
+Coeficientes $P_{max}$ / $V_{oc}$ / $I_{sc}$ & $-0{,}29$ / $-0{,}25$ / $+0{,}05$ \%/°C; NMOT 41~$\pm$~3~°C\\
+Eficiencia & 22,5\,\%\\
+Tensión máxima del sistema & 1500~V (IEC/UL)\\
+Fusible serie máximo & 30~A\\
+Dimensiones / masa & 2278 $\times$ 1134 $\times$ 40~mm / 31,6~kg\\
+Cargas mecánicas & Nieve hasta 6000~Pa; viento hasta 4000~Pa\\
+Temperatura de operación & $-40$ a $+85$~°C\\
+Conector / cable & T6 o MC4-EVO2; 12~AWG (UL), 300/200~mm\\
+Certificaciones & IEC 61215, IEC 61730, UL 61730, IEC 61701 (niebla salina), IEC 62716 (amoníaco); fuego tipo 29 (UL 61730)\\
+Justificación & Listado UL, como exige NEC 690.4(B). Misma huella que la alternativa descartada, por lo que la distribución no depende de la marca. En la compra debe especificarse la variante con conector MC4-EVO2 (la ficha admite también T6 y MC4-EVO2A). Resiste un viento mayor que el de diseño. El módulo es bifacial, pero en montaje coplanar, a pocos centímetros de la lámina, la ganancia posterior es pequeña; no se considera ni en la producción ni en el dimensionamiento eléctrico (criterio del fabricante del optimizador, sección~\ref{sec:equipos}).\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Optimizador: SolarEdge S650B}
+El S650B tiene las siguientes características \cite{seOpt}:
+\begin{itemize}
+\item Potencia de entrada de \SI{650}{\watt}.
+\item Tensión máxima de entrada de \SI{85}{\volt} y rango MPPT de 12,5--85~V.
+\item $I_{sc}$ máxima del módulo conectado de \SI{15}{\ampere}; salida máxima de \SI{15}{\ampere} y \SI{80}{\volt}.
+\item Tensión de seguridad de \SI{1}{\volt} por optimizador.
+\item Eficiencia máxima de 99,5\,\% y ponderada de 98,6\,\%.
+\item Operación de $-40$ a $+85$~°C, conectores MC4 y masa de 790~g.
+\item Normas UL 1741, IEC 62109-1 y NEC 2014/2017/2020 (PVRSS).
+\end{itemize}
+
+Para la red trifásica de 208~V, el fabricante permite strings de \textbf{8 a 25} optimizadores, con una potencia nominal máxima de \SI{6000}{\watt} por string y una potencia conectada máxima de \SI{7800}{\watt} por string cuando hay dos o más strings; en ese caso la diferencia de potencia entre strings no debe superar \SI{1000}{\watt} \cite{seOpt}. El límite de 50 optimizadores que aparece en la ficha corresponde a la red de 277/480~V (y, según la misma ficha, un string de más de 30 optimizadores no cumple el apagado rápido del NEC). Los strings de este diseño tienen 9 optimizadores y \SI{5220}{\watt}, son idénticos y cumplen todos esos límites.
+
+\textbf{Compatibilidad con el módulo:}
+\begin{itemize}
+\item Potencia: $580 < 650$~W.
+\item Corriente: $I_{sc}=13{,}93$~A es menor que 15~A, y sigue siéndolo a \SI{70}{\celsius} (14,24~A). Para módulos bifaciales, SolarEdge establece que la compatibilidad se verifica con los valores eléctricos \emph{frontales} de la ficha del módulo (0\,\% de ganancia posterior) \cite{seBifacial}; con ese criterio el S650B es compatible. Como referencia, con una ganancia posterior del 5\,\% (Isc = 14,63~A según la ficha del módulo) la corriente a 70~°C sería de 14,96~A, todavía menor que 15~A.
+\item Tensión: $V_{oc}$ en frío de 54,8~V, menor que 85~V.
+\end{itemize}
+
+\subsection{Inversor: SolarEdge SE10KUS (208~V, trifásico)}
+\begin{table}[H]
+\centering\small
+\caption{Características del inversor \cite{seInv}.}\label{tab:inversor}
+\begin{tabularx}{\textwidth}{L{5.4cm}Y}
+\toprule
+Función & Conversión DC/AC, MPPT por optimizadores, protección anti-isla y apagado rápido\\
+Potencia AC / tensión & 10\,000~W; 208Y/120~V (183--229~V L-L), 3$\phi$ con neutro\\
+Corriente AC continua & 27,8~A por fase; GFDI de 1~A\\
+DC: potencia máx. / tensión máx. / rango & 17\,500~W (STC) / 600~V / 370--600~V\\
+Corriente DC máxima & 27,8~A (cortocircuito máx. 55~A); 4 pares de entradas\\
+Protecciones integradas & SPD tipo 2 en DC y en AC (reemplazables en campo); fusibles DC de 25~A (un polo); desconectador DC; detección de aislamiento\\
+Eficiencia CEC & 97\,\%\\
+Normas & UL 1741, UL 1741 SA, UL 1741 SB, UL 1699B (AFCI), CSA C22.2; IEEE 1547-2018; apagado rápido NEC 2014--2023 integrado\\
+Ambiente / envolvente & $-40$ a $+60$~°C; NEMA 3R; 35,5~kg\\
+Comunicación & 2$\times$RS485, Ethernet, Wi-Fi (SetApp), celular opcional\\
+Justificación & La documentación del fabricante indica compatibilidad con la certificación que pide el ICE; la admisibilidad queda pendiente del informe ICE-LEE/ECA. Rango de factor de potencia de $\pm$0,85 a 1 con 10\,000~VA: permite los 44\,\% de reactivos de la categoría B (sección~\ref{sec:config_ice}). Tensión nativa de 208~V: no necesita transformador. Integra el iniciador de apagado rápido con los S650B (un solo fabricante, compatibilidad documentada). Dos unidades dan redundancia parcial.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Estructura de montaje}
+Se propone el sistema \textbf{S-5! PVKIT 2.0}, sin rieles, con abrazaderas \textbf{S-5-U} para junta alzada sobre las costillas de la lámina SSP380 \cite{s5}:
+\begin{itemize}
+\item No perfora la lámina.
+\item Hace la unión equipotencial módulo--soporte con listado UL 2703.
+\item Pesa alrededor de \SI{4}{\kilogram} por módulo, incluido el cableado.
+\end{itemize}
+
+\textbf{Compatibilidad con el módulo según el manual del fabricante} \cite{s5manual}:
+\begin{itemize}
+\item La tabla de cargas UL 2703 del PVKIT 2.0 incluye el modelo Canadian Solar CS6W-xxxTB-AG, con fijación entre 100 y 500~mm del extremo del módulo y cargas de diseño de 50~psf (\SI{2.39}{\kilo\pascal}) hacia abajo, 30~psf (\SI{1.44}{\kilo\pascal}) de succión y 10~psf (\SI{0.48}{\kilo\pascal}) en el sentido de la pendiente. La succión última de este proyecto, \SI{1.24}{\kilo\pascal} (sección~\ref{sec:estructura}), es menor que 1,44~kPa.
+\item El PVKIT admite marcos de 30 a 46~mm; el CS6W tiene un marco de 40~mm.
+\item \textbf{Unión equipotencial.} El manual (2024) limita el listado UL 2703 a módulos con fusible serie máximo de 35~A, o de 30~A con el clip para MLPE, y anodizado del marco de 20~$\mu$m o menos \cite{s5manual}; las instrucciones de instalación (2025) indican 25~A \cite{s5inst}. El CS6W declara 30~A. Como los dos documentos del fabricante no coinciden, el diseño \textbf{no depende} de la unión del PVKIT para la puesta a tierra: cada marco lleva una orejeta de tierra listada UL 2703 (del tipo que el propio manual indica en su sección 2.4.1, por ejemplo Burndy o HEYCO) y un puente de cobre estañado \#10 hasta el EGC del arreglo. La unión por los dientes del PVKIT queda como camino adicional.
+\item La nota de certificación CSA del manual (800~Pa para módulos de hasta \SI{2.31}{\meter\squared}) no aplica a este caso, porque corresponde al mercado canadiense; el CS6W tiene \SI{2.58}{\meter\squared}, por lo que la referencia válida es la tabla UL 2703.
+\end{itemize}
+
+\textbf{Abrazadera.} La abrazadera depende de la geometría de la costilla del perfil SSP380 y de su calibre (HG \#24). No fue posible acceder a la cubierta ni obtener la ficha de SOLCON, por lo que se adopta la \textbf{S-5-U}, la abrazadera de uso general de S-5! para costillas verticales de junta alzada \cite{s5compat}, con una separación de costillas de 0,38~m \supuesto{}. Con esa separación cada borde corto del módulo (1134~mm) cruza tres costillas y se fija en dos de ellas, entre 100 y 500~mm de cada esquina, como pide la tabla UL 2703. Se usan 5 líneas de apoyo (EdgeGrab en las dos extremas y MidGrab compartido en las tres interiores) con 18 abrazaderas cada una: 90 en total. La carga exigida a cada abrazadera (2,9~kN de carga de ensayo última, sección~\ref{sec:estructura}) se incluye en la orden de compra para que el proveedor la confirme con la tabla de cargas del perfil.
+
+\subsection{Conductores, canalizaciones y conectores}
+\begin{itemize}
+\item \textbf{DC:} PV Wire de cobre \#10~AWG (UL 4703; 1--2~kV; \SI{90}{\celsius}, resistente a UV). Los saltos entre optimizadores usan los cables de fábrica (MC4).
+\item \textbf{Canalización DC:} una EMT de 3/4'' por inversor, con accesorios de compresión a prueba de lluvia. Va sobre soportes al menos 23~mm por encima de la lámina, por lo que no aplica el sumador de temperatura de techo.
+\item \textbf{AC:} THWN-2 de cobre: \#8 para cada inversor y \#4 para el alimentador común. EGC \#10 y \#8 en EMT de 3/4'' y 1-1/4''.
+\item \textbf{Conectores:} familia Stäubli MC4 en los extremos de cada string. Se prohíbe acoplar conectores de otros fabricantes (IEC 62852 / UL 6703).
+\item \textbf{Paso a fachada:} la EMT baja por el alero, por lo que no hay perforación en la cubierta. Se usan abrazaderas S-5! para tubería sobre la costilla.
+\end{itemize}
+
+\subsection{Protecciones, desconexión y sobretensiones}
+\begin{itemize}
+\item \textbf{CB-1 y CB-2:} interruptores de 35~A/3P Schneider QOB335 (atornillables; aptos para retroalimentación y fijos, NEC 705.12(D), (E)) en el tablero \textbf{TFV}. El TFV es un Square D NQ trifásico de 208Y/120~V con barras de 100~A, en gabinete NEMA 3R en la fachada sur.
+\item \textbf{IFV:} desconectador de servicio pesado sin fusibles Square D HU363RB (100~A, 600~V, NEMA 3R) con kit de neutro sólido, en la fachada sur. Da corte visible, se puede bloquear con candado, es accesible desde el exterior para el ICE y Bomberos, y funciona como desconectador del sistema FV e iniciador del apagado rápido. Se especifica un SCCR de 10~kA o más con protección por interruptor, mayor que la falla disponible en ese punto (6,8~kA).
+\item \textbf{IS-TS01 (nuevo):} interruptor secundario de 400~A/3P Schneider PowerPact LAL36400 (L-frame, UL 489) en gabinete NEMA 1, a 3~m o menos de los bornes secundarios de TS-01 (NEC 240.21(C)(2)). Protege en su origen los dos juegos de \#4/0 hacia el ATS, de modo que el tramo donde se hace la derivación FV es un alimentador protegido. Su capacidad interruptiva supera la falla disponible de 8,7~kA.
+\item \textbf{CD-FV:} gabinete interior, junto a TS-01 y aguas abajo de IS-TS01, con un bloque de distribución de potencia trifásico listado UL 1953 (por ejemplo, Mersen serie MPDB) insertado en el alimentador IS-TS01--ATS (entradas 2$\times$4/0, derivación \#4). La derivación termina, a menos de 3~m, en el interruptor \textbf{CB-INT} de 70~A/3P Schneider PowerPact HDL36070 dentro del mismo gabinete. En CD-FV se instalan también los transformadores de corriente del medidor SolarEdge.
+\item \textbf{SPD-AC:} supresor tipo 2 Schneider SurgeLogic para 208Y/120~V, de la misma familia que el especificado en E07, en el TFV.
+\item \textbf{SPD-DC:} integrado. Según su ficha, el SE10KUS incluye protección contra sobretensiones tipo 2 en DC y en AC, reemplazable en campo, y fusibles DC de 25~A \cite{seInv}. Por eso no se agrega un SPD-DC externo. Si la UTN instala el sistema de protección contra rayos que recomienda la evaluación de la sección~\ref{sec:rayo}, el SPD-AC del TFV se sustituye por uno tipo 1 y se agrega un SPD tipo 1 en la entrada DC.
+\end{itemize}
+
+\subsection{Puesta a tierra, equipotencialización y descargas atmosféricas}
+Cada marco de módulo lleva una orejeta de tierra listada UL 2703 y un puente de cobre estañado \#10 (sección~\ref{sec:equipos}); los dientes de unión del PVKIT dan un camino adicional. Desde el arreglo sale un EGC \#10 de cobre estañado o aislado dentro de la EMT, que pasa por los inversores y el TFV (\#10), el IFV y CD-FV (\#8) y la barra de tierra de TS-01/TP, hasta llegar a la malla existente de \SI{5}{\ohm} o menos (registros G-01 a G-05 de E01).
+
+Los inversores no tienen transformador y su circuito DC está aislado de tierra, por lo que no se instala un conductor del electrodo DC (NEC 690.47(A)). Las láminas eléctricas no muestran un sistema de pararrayos. La evaluación simplificada de la sección~\ref{sec:rayo} recomienda dotar al edificio de un sistema de protección contra rayos; es una condición existente del edificio, que la cubierta metálica ya tiene sin el sistema FV. El arreglo queda preparado para unirse a ese sistema mediante una barra de unión en el alero, junto a BJ-DC (lámina FV-04).
+
+\subsection{Monitoreo, medición y comunicación}
+\begin{itemize}
+\item Plataforma SolarEdge con monitoreo de cada módulo.
+\item Conexión UTP Cat6 al rack del cuarto DATIC, que está al lado del cuarto eléctrico.
+\item Medidor SolarEdge \emph{Energy Meter with Modbus Connection} para Norteamérica \cite{seMeter}, variante trifásica en estrella 208Y/120~V, con tres transformadores de corriente de núcleo partido de 400~A (la corriente máxima del alimentador). Los TC se instalan en CD-FV, en el alimentador \emph{entre TS-01 y la derivación}, y cada uno abraza los dos conductores en paralelo de su fase; así miden el intercambio neto del edificio con la red. Permite limitar la exportación si el ICE lo pide.
+\item La medición para facturación es el medidor bidireccional del ICE en el punto de servicio.
+\item \textbf{Comunicación con el SCADA del ICE (COM-ICE), condicionada a la tarifa.} Si el servicio del edificio es binómico (como suponen los escenarios A y C de la sección~\ref{sec:viabilidad}), el ICE exige la interfaz de los apartados 5.4.7 a 5.4.12 de DC-03-IT-21-001 aunque el sistema sea menor de 100~kVA. Se prevé: (i) un único punto de datos y telecontrol, formado por INV-1 como equipo líder, enlazado por RS485 con INV-2, y su puerto Ethernet con Modbus SunSpec sobre TCP/IP, uno de los protocolos de la tabla 41 de INTE N137:2024 que admite el ICE \cite{seSunSpec}; (ii) un router/módem LTE industrial (por ejemplo, Teltonika RUT241) en el rack de DATIC, con la SIM que defina el ICE a cargo del cliente; y (iii) una fuente con respaldo de batería para el router y el conmutador (por ejemplo, fuente Mean Well DRC-40A con batería VRLA de 12~V y 7~Ah; consumo inferior a 10~W, autonomía de varias horas), que cumple el mínimo de 2~horas de 5.4.12. El protocolo, el mapa de registros y el medio físico definitivos los fija el ICE en el estudio técnico; si el ICE pide IEEE 2030.5 o DNP3, se agrega la pasarela que indique el fabricante. Si el servicio resultara monómico, COM-ICE no se instala, pero el ICE exige un medidor AMI de generación (5.4.15).
+\end{itemize}
+
+\subsection{Rotulación}
+Los rótulos son de material resistente a UV y siguen el texto del NEC traducido al español (Cuadro~\ref{tab:rotulos}).
+
+\subsection{Almacenamiento}
+No aplica. El edificio ya tiene generador y UPS, y la modalidad de autoconsumo con excedentes no requiere baterías. No se dimensiona autonomía.
+
+\subsection{Matriz de compatibilidad}
+\begin{table}[H]
+\centering\small
+\caption{Compatibilidad entre componentes, con su respaldo documental.}\label{tab:compat}
+\begin{tabularx}{\textwidth}{L{3.2cm}YL{2.0cm}}
+\toprule
+\textbf{Interfaz} & \textbf{Verificación} & \textbf{Resultado}\\
+\midrule
+Módulo $\rightarrow$ S650B & $P$: 580 $\leq$ 650~W; $V_{oc}$ en frío: 54,8 $\leq$ 85~V; $I_{sc}$ a 70~°C: 14,24 $\leq$ 15~A (valores frontales, criterio de SolarEdge para bifaciales \cite{seBifacial}); MC4-EVO2/MC4 de la familia Stäubli & Cumple\\
+String $\rightarrow$ SE10KUS & 9 optimizadores (rango de 8 a 25 en 208~V); 5220 $\leq$ 6000~W nominales por string ($\leq$ 7800~W con dos o más strings); strings iguales; 10\,440 $\leq$ 17\,500~W por inversor; 370--600~V regulados & Cumple\\
+SE10KUS $\rightarrow$ red & 208Y/120~V, 3$\phi$ 4 hilos, 60~Hz; la ficha declara IEEE 1547-2018 y UL 1741 SB; FP $\pm$0,85 a 1 (categoría B) & Compatible según ficha; admisible tras informe ICE-LEE/ECA\\
+Apagado rápido & S650B + SE10KUS del mismo fabricante, listados como sistema PVRSS & Cumple\\
+Comunicación & SetApp, Ethernet y RS485 (Modbus) con el medidor SolarEdge; Modbus SunSpec TCP hacia COM-ICE \cite{seSunSpec} & Compatible; protocolo final según el ICE\\
+Módulo $\rightarrow$ PVKIT & Marco de 40~mm (rango de 30 a 46~mm); CS6W-xxxTB-AG en la tabla UL 2703 del PVKIT (30~psf = 1,44~kPa de succión $\geq$ 1,24~kPa, presión última de la sección~\ref{sec:estructura}) \cite{s5manual}; la puesta a tierra usa orejetas UL 2703 propias, sin depender del límite de fusible del PVKIT & Cumple\\
+PVKIT $\rightarrow$ SSP380 & Abrazadera S-5-U sobre costilla vertical, calibre HG 24, separación de 0,38~m \supuesto{}; carga de ensayo última exigida de 2,9~kN por abrazadera & Pendiente de la tabla de cargas del perfil\\
+Ambiente & Inversor: $-40$/$+60$~°C, NEMA 3R, instalado en el exterior bajo el alero; módulo y optimizador: hasta 85~°C & Cumple\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =====================================================================
+\section{Diseño de la instalación}
+\subsection{Distribución, orientación e inclinación del arreglo}
+\label{sec:distribucion}
+El arreglo tiene 36 módulos en orientación vertical (lado largo en la dirección de la pendiente), en 4 filas de 9. Cada fila es un string (lámina FV-01, Fig.~\ref{fig:fv01}):
+\begin{itemize}
+\item \textbf{Huella:} \SI{10.41}{\meter} $\times$ \SI{9.19}{\meter}, con juntas de \SI{25}{\milli\meter}.
+\item \textbf{Posición:} a \SI{2.32}{\meter} de los aleros de los ejes A y M, a \SI{3.24}{\meter} de las losas de condensadoras y a \SI{4.61}{\meter} del alero bajo. Los módulos se numeran M01 a M36 y los optimizadores O01 a O36.
+\item \textbf{Orientación:} coplanar con la cubierta (\SI{8.53}{\degree}; azimut real de unos 60°, ENE, según la imagen satelital y el registro fotográfico; en las láminas, ``Este'' de proyecto).
+\end{itemize}
+
+Esta posición se justifica por cinco criterios:
+\begin{enumerate}[label=(\roman*)]
+\item Cumple el pasillo perimetral de \SI{1.2}{\meter} de NFPA 1.
+\item Queda completamente fuera de las zonas de borde de viento ($a=\SI{1.5}{\meter}$).
+\item Deja libre la franja de sombra y servicio de las condensadoras.
+\item No interfiere con las huellas de mantenimiento ni con la pasarela.
+\item Mantiene la fila superior fuera de la sombra hasta que el sol baja de un perfil de 31,5°.
+\end{enumerate}
+
+\begin{landscape}
+\thispagestyle{lscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{laminas/FV-01.pdf}
+\caption{Lámina FV-01 (A3, 1:125): planta de cubierta con la distribución del arreglo, pasillos de Bomberos, zonas de viento, exclusiones y ruta DC.}
+\label{fig:fv01}
+\end{figure}
+\end{landscape}
+
+\subsection{Configuración de strings}
+\begin{table}[H]
+\centering\small
+\caption{Nomenclatura y configuración de circuitos.}\label{tab:strings}
+\begin{tabularx}{\textwidth}{L{1.8cm}L{3.8cm}L{2.3cm}Y}
+\toprule
+\textbf{ID} & \textbf{Composición} & \textbf{Potencia} & \textbf{Destino}\\
+\midrule
+S1 / S2 & 9 $\times$ (CS6W + S650B) cada uno & \SI{5.22}{\kWp} c/u & INV-1, pares de entrada 1 y 2 (C-DC1 y C-DC2)\\
+S3 / S4 & 9 $\times$ (CS6W + S650B) cada uno & \SI{5.22}{\kWp} c/u & INV-2, pares de entrada 1 y 2 (C-DC3 y C-DC4)\\
+C-AC1 / C-AC2 & 3\#8 + N\#8 + EGC\#10, EMT 3/4'' & 10~kW c/u & INV-1/2 $\rightarrow$ CB-1/CB-2 (TFV)\\
+C-AC3 & 3\#4 + N\#4 + EGC\#8, EMT 1-1/4'' & 20~kW & TFV $\rightarrow$ IFV (unos 1~m, exterior)\\
+C-AC4 & 3\#4 + N\#4 + EGC\#8, EMT 1-1/4'' & 20~kW & IFV $\rightarrow$ CB-INT en CD-FV (pasamuro, unos 3~m)\\
+Derivación & 3\#4 + N\#4, $\leq$ 3~m & 20~kW & Bloque UL 1953 $\rightarrow$ CB-INT (dentro de CD-FV)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Configuración de los inversores exigida por el ICE}
+\label{sec:config_ice}
+La puesta en servicio de INV-1 e INV-2 se hace con la siguiente configuración, que se registra en el protocolo de pruebas (lámina FV-04, prueba 8) y se entrega al ICE con la solicitud:
+\begin{itemize}
+\item \textbf{Categoría de desempeño B} como condición inicial (DC-03-IT-21-001, 5.7.2) \cite{iceIT}. No se solicita la categoría A.
+\item \textbf{Modos de control disponibles y habilitables:} factor de potencia constante, tensión--potencia reactiva (volt-var), potencia activa--potencia reactiva, potencia reactiva constante y tensión--potencia activa (volt-watt), todos obligatorios para la categoría B (5.7.3). El SE10KUS es un equipo certificado bajo IEEE 1547-2018 y UL 1741 SB, cuyo alcance cubre estas funciones; su ficha declara un factor de potencia ajustable de $\pm$0,85 a 1 con 10\,000~VA \cite{seInv}.
+\item \textbf{Modo activo por defecto: volt-var} (5.7.6), con los puntos de la tabla del apartado 5.7.6 para la categoría B (inyección del 44\,\% de la potencia aparente nominal a 0,95~$V_N$, absorción del 44\,\% a 1,05~$V_N$ y tiempo de respuesta de lazo abierto de 5~s). Para entregar ese 44\,\% de reactivos con 10\,000~VA, cada inversor puede recortar la potencia activa hasta unos 9,0~kW, lo que el apartado 5.7.5 permite; como la tensión del punto de acople rara vez llega a los extremos de la curva, el efecto sobre la producción anual es despreciable.
+\item \textbf{Ajustes definitivos:} los puntos de la curva, el modo activo, la categoría de operación anormal (I, II o III, 5.8.2--5.8.3) y los umbrales de disparo (5.9) quedan \textbf{sujetos a los ajustes que ordene el ICE} para el punto de acople común en el estudio técnico de la etapa 2. El perfil de red se carga con SetApp y se documenta con capturas firmadas por el profesional responsable.
+\item \textbf{Telecontrol:} si el abonado es binómico, la consigna de los modos y los límites de potencia se recibe por el punto único COM-ICE (sección~\ref{sec:equipos}).
+\end{itemize}
+
+\subsection{Ubicación de inversores, tableros, desconectadores y medición}
+La lámina E01 muestra que el muro interior del eje A del cuarto eléctrico ya está ocupado por TM-UPS, TS-01, el ATS y el TP, y que la UPS y los tableros secundarios ocupan el resto del cuarto. Por eso la ubicación se resolvió así (lámina FV-02, Fig.~\ref{fig:fv02}):
+\begin{itemize}
+\item \textbf{INV-1, INV-2, TFV e IFV} se instalan en la cara exterior del mismo muro (fachada sur, entre los ejes 14 y 16), bajo el alero, en envolventes NEMA 3R. El tramo libre del muro se reparte a ambos lados de la condensadora existente del cuarto eléctrico.
+\item \textbf{IS-TS01} (interruptor secundario de 400~A) y \textbf{CD-FV} (derivación y CB-INT de 70~A) se montan en el muro interior, junto a TS-01: IS-TS01 a menos de 3~m de los bornes secundarios y CB-INT a menos de 3~m del punto de derivación.
+\end{itemize}
+
+Esta disposición tiene cuatro ventajas:
+\begin{itemize}
+\item Los circuitos DC bajan por la fachada directamente a los inversores y nunca entran al edificio (NEC 690.31(D)).
+\item El IFV queda accesible desde el exterior para el ICE y Bomberos, sin entrar al cuarto eléctrico.
+\item El calor de los inversores (unos \SI{0.6}{\kilo\watt}) no se suma a la carga térmica del cuarto.
+\item Los tramos AC son cortos: 3~m entre inversores y TFV y unos 4~m entre TFV y CD-FV.
+\end{itemize}
+
+Las alturas de montaje (0,90--1,75~m), el espacio de trabajo de NEC 110.26 y la altura máxima de maniobra de 2,0~m se indican en la elevación E1. Como el piso del cuarto eléctrico está unos 2,3~m por debajo de la rasante exterior, el pasamuro (a unos 0,55~m sobre la rasante, bajo el IFV) llega a unos 2,85~m sobre el piso interior: C-AC4 baja por el muro interior en EMT hasta CD-FV, cuya manija queda a 1,70~m del piso del cuarto (NEC 240.24(A): 2,0~m como máximo). La posición de la condensadora existente se tomó de E01 y de las fotografías de la fachada (Fig.~\ref{fig:foto_sur2}).
+
+\begin{landscape}
+\thispagestyle{lscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{laminas/FV-02.pdf}
+\caption{Lámina FV-02 (A3, 1:50 y 1:40): planta parcial del nivel~1 con los equipos FV en la fachada sur y el cuarto eléctrico, y elevación E1.}
+\label{fig:fv02}
+\end{figure}
+\end{landscape}
+
+\subsection{Recorrido y protección del cableado}
+\begin{enumerate}
+\item \textbf{Dentro del arreglo:} cables de fábrica de los optimizadores, sujetos con clips a los marcos y sin tocar la lámina.
+\item \textbf{Cubierta:} 2 EMT de 3/4'' sobre soportes, por el costado sur del arreglo (entre el arreglo y la huella del eje B), hasta el alero del eje A entre los ejes 15 y 16 (punto BJ-DC, a \SI{16.1}{\meter} del alero alto). Cruzan la huella con protector de paso.
+\item \textbf{Fachada sur:} bajante en EMT fijada a la pared, con rótulos ``CIRCUITO DC SOLAR FV'' a no más de 3~m (NEC 690.31(D)(2)), que llega por arriba a los inversores, entre INV-1 e INV-2. La longitud máxima estimada de DC es de unos 23~m. Para el cálculo se usan \SI{30}{\meter} por conservadurismo.
+\item \textbf{AC:} EMT a 0,20~m sobre la rasante, por debajo de la condensadora existente, desde los inversores hasta el TFV. De ahí sigue al IFV y, por un pasamuro, a CD-FV en el interior.
+\end{enumerate}
+
+\subsection{Punto de interconexión}
+\label{sec:interconexion}
+Se evaluaron tres alternativas. Los cálculos de cada una están en la sección~\ref{sec:calc_inter}.
+\begin{description}
+\item[A. Interruptor retroalimentado en el TP (regla del 120\,\%).] Con las barras de 800~A verificadas en sitio es viable con amplitud. NEC 2020, 705.12(B)(3)(2), suma el 125\,\% de la corriente de salida de la fuente y la capacidad del dispositivo que protege la barra: $400 + 1{,}25(55{,}6) = 469{,}5 \leq 1{,}2(800)=960$~A (con el interruptor de 70~A en lugar de $1{,}25\,I$, $400+70=470$~A, el resultado no cambia), y el TP tiene espacios libres (2 a 12). Aun así se descarta por una razón operativa: el TP está \textbf{aguas abajo del ATS}, por lo que con la red caída el generador energizaría los inversores. Estos podrían inyectar contra el generador y causarle potencia inversa los fines de semana, con poca carga. Evitarlo exigiría un enclavamiento entre el ATS y los inversores (por ejemplo, un contacto auxiliar de la posición ``emergencia'' que abra el IFV), lo que agrega una dependencia de control que la alternativa B no necesita.
+\item[B. Derivación en el alimentador IS-TS01--ATS (lado normal).] \textbf{Es la elegida.} Los conductores secundarios de TS-01 no están protegidos en su origen: en un transformador delta-estrella la protección primaria no protege el secundario (NEC 240.4(F)), y su protección actual es el principal de 400~A del TP, en el extremo de carga (240.21(C)). Una regla de derivación de alimentador (240.21(B)) supone un alimentador protegido por un dispositivo de sobrecorriente, por lo que no se aplica directamente sobre esos conductores. Por eso se agrega el interruptor secundario \textbf{IS-TS01} de 400~A inmediatamente a la salida de TS-01 (a $\leq$ 3~m, 240.21(C)(2)). Aguas abajo de IS-TS01 el tramo hacia el ATS es un alimentador protegido en su origen, y la derivación FV, también del lado normal del ATS, se verifica directamente con 705.12(B)(2) y 240.21(B)(1). La derivación se protege con un interruptor de 70~A a menos de 3~m. Si falla la red del ICE, el lado normal queda sin tensión. Los inversores detectan la isla y dejan de inyectar en 2~s o menos (IEEE 1547-2018), y el ATS transfiere después. Así, el generador nunca alimenta el lado FV. Cuando la red vuelve, los inversores esperan su tiempo de reconexión antes de inyectar. El retardo de detección de falla de la fuente normal del controlador MPAC 1200 se ajusta a 3~s \supuesto{}, mayor que los 2~s de cese de los inversores. Además, el ATS instalado (Kohler KSS-ACTC-0400S, placa verificada en sitio) es de la serie KSS de transición estándar (abierta): nunca cierra la red y el generador a la vez, ni siquiera durante las pruebas del generador con carga.
+\item[C. Conexión en 480~V, aguas arriba de TS-01.] También quedaría del lado normal. Se descarta porque los inversores de 480~V que se evaluaron no muestran certificación SB, porque el nivel de falla y el riesgo de arco son mayores, y porque el punto accesible está en el nicho del transformador, a 100~m.
+\end{description}
+
+\subsection{Puesta a tierra, equipotencialización y medios de desconexión}
+El detalle conceptual está en la lámina FV-04 (Fig.~\ref{fig:fv04}). Incluye la cadena de puesta a tierra desde los marcos hasta la malla existente, los medios de desconexión, la secuencia de desconexión de emergencia, el cuadro de rótulos y las pruebas de puesta en marcha.
+
+\begin{landscape}
+\thispagestyle{lscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{laminas/FV-04.pdf}
+\caption{Lámina FV-04 (A3): puesta a tierra, equipotencialización, medios de desconexión, rotulación y pruebas.}
+\label{fig:fv04}
+\end{figure}
+\end{landscape}
+
+\subsection{Medidas particulares de la cubierta}
+\begin{itemize}
+\item \textbf{Impermeabilización:} no se perfora la cubierta. Las abrazaderas sujetan la costilla y la EMT baja por el alero.
+\item \textbf{Cargas:} la carga muerta agregada es de \SI{0.13}{\kilo\pascal}, distribuida en la costilla y los clips. Se requiere un dictamen estructural (sección~\ref{sec:estructura}).
+\item \textbf{Viento:} el arreglo está en la zona interior. Se verifica la fuerza por abrazadera (1,46~kN mayorada y 0,87~kN de servicio en las líneas interiores) y se respetan las distancias de fijación del fabricante.
+\item \textbf{Corrosión:} tornillería de acero inoxidable y abrazaderas de aluminio. No hay contacto directo entre el cobre y la lámina galvanizada.
+\item \textbf{Seguridad industrial:} línea de vida o anclajes certificados para cubierta metálica, acceso por la pasarela existente y coordinación con el mantenimiento de las condensadoras.
+\end{itemize}
+
+% =====================================================================
+\section{Diagramas y documentación técnica}
+El juego de láminas del proyecto se entrega en formato A3, como PDF vectorial y PNG, en la carpeta \texttt{laminas/}, junto con sus fuentes en \LaTeX{}/TikZ y Python. Dentro de este documento se reproducen reducidas:
+\begin{table}[H]
+\centering\small
+\caption{Índice de láminas.}\label{tab:laminas}
+\begin{tabularx}{\textwidth}{L{1.6cm}YL{2.6cm}L{2.2cm}}
+\toprule
+\textbf{Lámina} & \textbf{Contenido} & \textbf{Escala (A3)} & \textbf{Figura}\\
+\midrule
+FV-00 & Plano general de ubicación (transformador ICE, acometida, edificio, generador, malla) & Sin escala (E01) & Fig.~\ref{fig:fv00}\\
+FV-01 & Planta de cubierta: arreglo, numeración de módulos, pasillos, zonas de viento, exclusiones y ruta DC & 1:125 & Fig.~\ref{fig:fv01}\\
+FV-02 & Planta parcial del nivel 1 y elevación E1: inversores, tableros, desconectadores y espacios de trabajo & 1:50 y 1:40 & Fig.~\ref{fig:fv02}\\
+FV-03 & Diagrama unifilar completo e interconexión & Sin escala & Fig.~\ref{fig:unifilar}\\
+FV-04 & Puesta a tierra, medios de desconexión, rótulos y pruebas & Sin escala & Fig.~\ref{fig:fv04}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Diagrama unifilar completo}
+El diagrama de la Fig.~\ref{fig:unifilar} (lámina FV-03) va desde los módulos hasta el punto de interconexión e incluye el sistema existente.
+
+\begin{landscape}
+\thispagestyle{lscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.86\textheight,keepaspectratio]{laminas/FV-03.pdf}
+\caption{Lámina FV-03 (A3): diagrama unifilar completo del sistema FV y su interconexión con el sistema existente.}
+\label{fig:unifilar}
+\end{figure}
+\end{landscape}
+
+\subsection{Cuadro de equipos}
+\begin{table}[H]
+\centering\small
+\caption{Cuadro de equipos principales.}\label{tab:equipos}
+\begin{tabularx}{\textwidth}{L{1.4cm}L{4.2cm}YL{2.4cm}}
+\toprule
+\textbf{ID} & \textbf{Equipo} & \textbf{Datos principales} & \textbf{Ubicación}\\
+\midrule
+M01--M36 & Canadian Solar CS6W-580TB-AG & 580~W, UL 61730 & Cubierta (FV-01)\\
+O01--O36 & SolarEdge S650B & 650~W, 15~A, PVRSS & Bajo cada módulo\\
+INV-1/2 & SolarEdge SE10KUS (208~V) & 10~kW, 27,8~A, UL 1741 SB & Fachada sur (FV-02)\\
+TFV & Square D NQ, 208Y/120~V, 100~A, NEMA 3R & 2$\times$QOB335 + SPD-AC & Fachada sur\\
+IFV & Square D HU363RB (sin fusibles) + neutro sólido & 100~A, 600~V, NEMA 3R, visible, con candado, SCCR $\geq$ 10~kA & Fachada sur\\
+IS-TS01 & Schneider PowerPact LAL36400 en gabinete NEMA 1 & Interruptor secundario de TS-01, 400~A/3P, UL 489 & Cuarto eléctrico, $\leq$ 3~m de TS-01\\
+CD-FV & Gabinete + bloque UL 1953 + CB-INT HDL36070 & Derivación y protección de 70~A & Cuarto eléctrico, junto a TS-01\\
+MED-FV & SolarEdge Energy Meter with Modbus Connection + 3 TC de 400~A & 3$\phi$ 208Y/120~V & CD-FV\\
+MED-ICE & Medidor bidireccional del ICE (lo instala el ICE) & Medición indirecta en 480~V & Nicho del transformador \supuesto{}\\
+COM-ICE & Router LTE (p. ej. Teltonika RUT241) + fuente con batería (p. ej. Mean Well DRC-40A + VRLA 12~V/7~Ah) & Punto único de datos y telecontrol hacia el SCADA del ICE; respaldo $\geq$ 2~h. Solo si el abonado es binómico & Rack de DATIC\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Lista de materiales (BOM)}
+{\small
+\begin{longtable}{L{1.4cm}L{4.3cm}L{4.4cm}L{4.2cm}}
+\caption{Lista de materiales.}\label{tab:bom}\\
+\toprule
+\textbf{Cant.} & \textbf{Elemento} & \textbf{Fabricante / modelo} & \textbf{Observación}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Cant.} & \textbf{Elemento} & \textbf{Fabricante / modelo} & \textbf{Observación}\\
+\midrule\endhead
+36 & Módulo FV 580~W & Canadian Solar CS6W-580TB-AG & 20,88~kWp; conector MC4-EVO2\\
+36 & Optimizador & SolarEdge S650B & Apagado rápido y MPPT por módulo\\
+2 & Inversor trifásico 10~kW & SolarEdge SE10KUS (208~V, SetApp) & Con desconexión DC, SPD tipo 2 DC/AC y fusibles DC integrados\\
+90 & Abrazadera de junta alzada & S-5! S-5-U & 18 por línea $\times$ 5 líneas de apoyo (4 filas + 1); carga de ensayo última $\geq$ 2,9~kN en HG 24\\
+90 & Sujeción sin rieles & S-5! PVKIT 2.0: 36 EdgeGrab y 54 MidGrab, con PV Disk & UL 2703; una por abrazadera\\
+36 & Orejeta de puesta a tierra & Listada UL 2703 para marco de aluminio (p. ej., Burndy o HEYCO, manual PVKIT §2.4.1) & Una por módulo; tornillería inoxidable\\
+$\approx$50~m & Cu estañado \#10 desnudo & -- & Puentes entre marcos y hacia el EGC; sin contacto con la lámina\\
+1 & Tablero FV (TFV) & Square D NQ 3$\phi$ 4h, 208Y/120~V, barras 100~A & Gabinete NEMA 3R (exterior)\\
+2 & Interruptor 35~A/3P atornillable & Schneider QOB335 & CB-1 y CB-2; retroalimentados\\
+1 & SPD AC tipo 2 & Schneider SurgeLogic (serie SDSA, 208Y/120~V) & En el TFV\\
+1 & Interruptor 20~A/3P atornillable & Schneider QOB320 & Protección del SPD-AC en el TFV\\
+1 & Desconectador sin fusibles 100~A, 600~V & Square D HU363RB (NEMA 3R, servicio pesado) + kit de neutro sólido & IFV; con candado; SCCR $\geq$ 10~kA. El circuito C-AC3/C-AC4 lleva neutro\\
+1 & Caja de derivación & Gabinete NEMA 1 + bloque UL 1953 (p. ej., Mersen MPDB) & CD-FV\\
+1 & Interruptor 70~A/3P en caja moldeada & Schneider PowerPact HDL36070 & CB-INT, dentro de CD-FV\\
+1 & Interruptor 400~A/3P en caja moldeada + gabinete NEMA 1 & Schneider PowerPact LAL36400 (UL 489) & IS-TS01, a $\leq$ 3~m de TS-01; zapatas para 2$\times$4/0 por fase\\
+$\approx$6~m & 2 juegos de 3\#4/0 + N\#4/0 THWN-2 Cu & -- & Reconexión TS-01 $\rightarrow$ IS-TS01 $\rightarrow$ CD-FV (en el alimentador existente)\\
+1 & Medidor de energía (MED-FV) & SolarEdge Energy Meter with Modbus Connection (NA, 3$\phi$ 208Y/120~V) + 3 TC de núcleo partido de 400~A & Monitoreo y limitación de exportación; TC en el alimentador, lado TS-01\\
+$\approx$240~m & PV Wire \#10 AWG Cu & UL 4703, 1--2~kV & 8 conductores $\times$ unos 30~m\\
+8 pares & Conectores MC4 & Stäubli PV-KST4/PV-KBT4 & Terminación de strings\\
+$\approx$70~m & THWN-2 \#10 verde (o Cu estañado) & -- & EGC DC y AC\\
+$\approx$40~m & THWN-2 \#8 Cu & -- & C-AC1 y C-AC2 (fases + N)\\
+$\approx$25~m & THWN-2 \#4 Cu & -- & C-AC3, C-AC4 y derivación (fases + N)\\
+$\approx$8~m & THWN-2 \#8 verde & -- & EGC de C-AC3 y C-AC4\\
+$\approx$50~m & EMT 3/4'' + accesorios de compresión & Listados (UL 797) & DC cubierta--fachada y C-AC1/2\\
+$\approx$6~m & EMT 1-1/4'' + accesorios + pasamuro & Listados & C-AC3 y C-AC4\\
+1 juego & Soportes de tubería sobre costilla & S-5! (soporte para tubo) & Sin perforación\\
+1 juego & Rótulos (Cuadro~\ref{tab:rotulos}) & Grabado o vinil UV & NEC, ICE y Bomberos\\
+1 & Línea de vida o anclajes & Anclaje certificado para cubierta metálica & Seguridad en altura\\
+1 & Barra de unión para pararrayos & Barra de Cu estañado en el alero, junto a BJ-DC & Unión futura al sistema de protección contra rayos\\
+1 & Cable UTP Cat6 ($\approx$20~m) & -- & Inversores $\rightarrow$ rack DATIC\\
+1 & Router/módem LTE industrial & Teltonika RUT241 o equivalente que acepte el ICE & COM-ICE; solo si el abonado es binómico; SIM a cargo del cliente\\
+1 & Fuente con respaldo de batería & Mean Well DRC-40A + batería VRLA 12~V/7~Ah & Alimenta el router y el conmutador $\geq$ 2~h (DC-03-IT-21-001, 5.4.12)\\
+\bottomrule
+\end{longtable}}
+
+\subsection{Especificaciones técnicas principales}
+\begin{table}[H]
+\centering\small
+\caption{Especificaciones de cableado, canalizaciones, conectores, estructura y señalización.}\label{tab:especificaciones}
+\begin{tabularx}{\textwidth}{L{2.6cm}Y}
+\toprule
+\textbf{Rubro} & \textbf{Especificación}\\
+\midrule
+Cableado DC & PV Wire de Cu \#10 AWG, UL 4703, 1--2~kV, 90~°C en húmedo, resistente a UV. Polaridad identificada (rojo +, negro $-$). Sin empalmes fuera de cajas listadas.\\
+Cableado AC & THWN-2 de Cu, 600~V, 90~°C (se dimensiona con la columna de 75~°C de los bornes). Fases negro, rojo y azul; neutro blanco; EGC verde o Cu estañado.\\
+Canalizaciones & EMT galvanizada (NEC 358) con accesorios de compresión a prueba de lluvia. En la cubierta va sobre soportes S-5! a 23~mm o más de la lámina. Ocupación $\leq$ 40\,\%. Bushing de tierra en las entradas a gabinetes. Pasamuro sellado con material cortafuego en el muro del cuarto eléctrico.\\
+Conectores & Stäubli MC4 / MC4-EVO2 (IEC 62852 / UL 6703) del mismo fabricante. Herramienta de crimpado del fabricante. Prohibido mezclar marcas.\\
+Estructura & S-5! PVKIT 2.0 sobre abrazaderas de junta alzada aptas para el perfil SSP380, calibre \#24. Tornillería de acero inoxidable 304 y torque según el fabricante. Unión equipotencial UL 2703 más orejeta de tierra por módulo. Abrazaderas S-5-U con carga de ensayo última $\geq$ 2,9~kN (líneas interiores).\\
+Envolventes & NEMA 3R en el exterior (INV, TFV, IFV); NEMA 1 en el interior (CD-FV). Candado en el IFV. Capacidad interruptiva o SCCR de 10~kA o más en todos los equipos AC nuevos.\\
+Señalización & Rótulos permanentes resistentes a UV (NEC 110.21(B)). El rótulo del interruptor de apagado rápido es reflectivo, con letras blancas sobre fondo rojo de al menos 9,5~mm (NEC 690.56(C)(2)); el rótulo de edificio con apagado rápido lleva el título en letras negras sobre fondo amarillo de al menos 9,5~mm y el resto en negro sobre blanco de al menos 4,8~mm, con un esquema del arreglo (NEC 690.56(C)(1)). Textos en el Cuadro~\ref{tab:rotulos}.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Especificaciones de rotulación}
+{\small
+\begin{longtable}{L{3.0cm}L{6.6cm}L{5.3cm}}
+\caption{Rótulos requeridos.}\label{tab:rotulos}\\
+\toprule
+\textbf{Ubicación} & \textbf{Texto (resumido)} & \textbf{Requisito}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Ubicación} & \textbf{Texto (resumido)} & \textbf{Requisito}\\
+\midrule\endhead
+ATS, TP, nicho de 480~V & ``ADVERTENCIA: ESTE EDIFICIO TIENE 3 FUENTES: RED ICE, GENERADOR Y SISTEMA FV. Ubicación de los desconectadores: \ldots'' & NEC 705.10 (directorio)\\
+Servicio y cuarto eléctrico & ``SISTEMA FV EQUIPADO CON APAGADO RÁPIDO. Coloque el interruptor IFV en OFF para apagar el sistema FV y reducir el riesgo de choque en el arreglo'' (con un esquema del arreglo) & NEC 690.56(C)(1)\\
+IFV & ``INTERRUPTOR DE APAGADO RÁPIDO DEL SISTEMA FV'' (blanco sobre rojo, reflectivo) y ``DESCONECTADOR DEL SISTEMA FV''; ``ADVERTENCIA: PELIGRO DE CHOQUE ELÉCTRICO. LOS TERMINALES DE LÍNEA Y DE CARGA PUEDEN ESTAR ENERGIZADOS EN LA POSICIÓN ABIERTA'' & NEC 690.12(C), 690.13(B), 690.56(C)(2), 705.20\\
+IFV y CD-FV (punto de interconexión) & ``FUENTE DE POTENCIA FV: corriente AC nominal de salida 55,6~A; tensión AC nominal 208~V'' & NEC 690.54\\
+TFV & ``ESTE EQUIPO ESTÁ ALIMENTADO POR MÚLTIPLES FUENTES. LA SUMA DE LOS DISPOSITIVOS DE SOBRECORRIENTE, EXCLUIDO EL QUE PROTEGE LAS BARRAS, NO DEBE EXCEDER LA CAPACIDAD DE LAS BARRAS'' & NEC 705.12(B)(3)(3)\\
+Inversores (DC) & ``FUENTE FV: tensión DC máxima 600~V'' & NEC 690.53\\
+CD-FV y TFV & ``ADVERTENCIA: FUENTE DUAL -- puede estar energizado por ambos lados'' & NEC 705.12(C)\\
+EMT DC (cada 3~m, en curvas y a ambos lados de pasos) & ``CIRCUITO DC SOLAR FV'' (reflectivo, letras blancas sobre rojo de 9,5~mm o más) & NEC 690.31(D)(2)\\
+Tableros nuevos & Etiqueta de riesgo de arco eléctrico & NEC 110.16, 110.21(B)\\
+CD-FV & ``CORRIENTE DE FALLA DISPONIBLE: 8,7~kA -- FECHA DEL CÁLCULO: 10/2026'' & Buena práctica (análoga a NEC 110.24)\\
+Acceso a cubierta & ``CUBIERTA CON PANELES SOLARES -- usar pasillos señalados'' & NFPA 1 §11.12\\
+\bottomrule
+\end{longtable}}
+
+% =====================================================================
+\section{Memoria de cálculo}
+\subsection{Recurso solar y energía producida}
+\label{sec:energia}
+\textbf{Datos de entrada:}
+\begin{itemize}
+\item Irradiación global horizontal media diaria de cada mes, de la estación Aeropuerto Juan Santamaría del IMN (Cuadro~\ref{tab:energia}) \cite{imnRad}.
+\item Inclinación de \SI{8.53}{\degree}, azimut de \SI{60}{\degree} (orientación real, sección~5.2) y $P_{DC}=\SI{20.88}{\kWp}$.
+\end{itemize}
+
+\textbf{Método.} Se implementó en Python con la librería pvlib \cite{pvlib}, en cinco pasos:
+\begin{enumerate}
+\item Para cada mes se toma el día característico de Klein \cite{klein1977}.
+\item Se escala el perfil horario de cielo despejado (Ineichen) para reproducir la irradiación diaria del IMN.
+\item Se separan las componentes directa y difusa con el modelo de Erbs \cite{erbs1982}.
+\item Se transpone al plano de la cubierta con el modelo de Hay-Davies, considerando las pérdidas angulares (IAM).
+\item Se calcula la temperatura de celda con el modelo SAPM para montaje cercano (\emph{close mount}), con un ambiente de $22{,}3 \pm \SI{5}{\celsius}$ y un viento de \SI{2}{\meter\per\second} \supuesto{}.
+\end{enumerate}
+Las sombras de las condensadoras se evalúan hora por hora con el ángulo de perfil, y las de los árboles con un horizonte por sectores (sección~\ref{sec:sombras}).
+
+\begin{table}[H]
+\centering\small
+\caption{Recurso solar y producción mensual estimada.}\label{tab:energia}
+\begin{tabular}{lrrrrrr}
+\toprule
+\textbf{Mes} & \textbf{GHI IMN} & \textbf{GHI} & \textbf{GHI mes} & \textbf{POA mes} & $\overline{T}_{cel}$ & $E_{AC}$\\
+ & MJ/m\textsuperscript{2}d & kWh/m\textsuperscript{2}d & kWh/m\textsuperscript{2} & kWh/m\textsuperscript{2} & °C & kWh\\
+\midrule
+Ene & 20 & 5,56 & 172,2 & 163,9 & 54 & 2\,645 \\
+Feb & 22 & 6,11 & 171,1 & 165,0 & 57 & 2\,657 \\
+Mar & 24 & 6,67 & 206,7 & 202,2 & 60 & 3\,256 \\
+Abr & 23 & 6,39 & 191,7 & 190,6 & 58 & 3\,087 \\
+May & 19 & 5,28 & 163,6 & 163,9 & 52 & 2\,687 \\
+Jun & 18 & 5,00 & 150,0 & 150,6 & 50 & 2\,477 \\
+Jul & 18 & 5,00 & 155,0 & 155,4 & 51 & 2\,555 \\
+Ago & 18 & 5,00 & 155,0 & 154,6 & 51 & 2\,537 \\
+Set & 17 & 4,72 & 141,7 & 140,3 & 50 & 2\,307 \\
+Oct & 17 & 4,72 & 146,4 & 143,7 & 50 & 2\,357 \\
+Nov & 16 & 4,44 & 133,3 & 129,7 & 49 & 2\,129 \\
+Dic & 17 & 4,72 & 146,4 & 140,3 & 50 & 2\,291 \\
+\midrule
+\textbf{Año} & 19 & 5,28 & \textbf{1933} & \textbf{1900} & 53 & \textbf{30\,985}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Resultados:}
+\begin{gather}
+E_{AC}=\SI{31.0}{\mega\watt\hour\per\anio};\qquad Y_f=\frac{30\,985}{20{,}88}=\SI{1484}{\kilo\watt\hour\per\kWp}\\
+PR=\frac{Y_f}{H_{POA}}=\frac{1484}{1900}=0{,}78
+\end{gather}
+La estación Fabio Baudrit (840~m; 17~MJ/m\textsuperscript{2} al día) da \SI{28.4}{\mega\watt\hour}. Por lo tanto, la producción esperada está entre 28,4 y \SI{31.0}{\mega\watt\hour} al año; se usa el valor de la estación Juan Santamaría, la más cercana al sitio (unos 3~km). El dato del IMN es una climatología de 1987; el rango entre las dos estaciones cubre esa incertidumbre.
+
+\textbf{Sensibilidad a la orientación y a las sombras del entorno.} El Cuadro~\ref{tab:sensib_sitio} recalcula la producción con el azimut nominal de las láminas (90°), con la otra lectura posible de la imagen satelital (150°, descartada con las fotografías) y con tres alturas de árboles.
+
+\begin{table}[H]
+\centering\small
+\caption{Producción anual según la orientación y la altura de los árboles (estación Aeropuerto Juan Santamaría; \texttt{calc/sensibilidad\_sitio.py}). Las variaciones son respecto al caso de cálculo, en negrita.}\label{tab:sensib_sitio}
+\setlength{\tabcolsep}{3.8pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Sombras del entorno} & \textbf{Az. 60° (real)} & \textbf{Az. 90° (nominal)} & \textbf{Az. 150° (descartado)}\\
+\midrule
+Sin árboles & 31,0~MWh (+0,1\,\%) & 31,3~MWh (+1,0\,\%) & 31,9~MWh (+2,8\,\%)\\
+Árboles 4~m más altos & \textbf{31,0~MWh} & 31,3~MWh (+0,9\,\%) & 31,8~MWh (+2,7\,\%)\\
+Árboles 10~m más altos & 30,4~MWh ($-$1,9\,\%) & 30,7~MWh ($-$1,0\,\%) & 31,2~MWh (+0,8\,\%)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con la estación Aeropuerto Juan Santamaría, la producción queda entre 30,4 y \SI{31.9}{\mega\watt\hour} en todos los escenarios, una variación de $-2$ a $+3$\,\% respecto al caso de cálculo. La orientación y los árboles no modifican el dimensionamiento ni la conclusión de viabilidad. Los azimuts opuestos (240° y 330°) no se evalúan porque contradicen las fachadas de A02 y las fotografías, que muestran el punto bajo de la cubierta en el eje 17. El modelo es conservador, porque supone que la sombra cubre todo el arreglo y no solo los módulos más cercanos al obstáculo.
+
+\subsection{Pérdidas del sistema}
+\begin{table}[H]
+\centering\small
+\caption{Cadena de pérdidas: los primeros cuatro factores se calculan con el modelo y el resto son supuestos declarados.}\label{tab:perdidas}
+\begin{tabularx}{\linewidth}{Xrl}
+\toprule
+\textbf{Concepto} & \textbf{Factor} & \textbf{Origen}\\
+\midrule
+Orientación e inclinación (POA/GHI) & 0,983 & Modelo (ENE, 60°, 8,5°)\\
+Reflexión angular (IAM) & 0,965 & Modelo (pvlib, físico)\\
+Sombra de las condensadoras y de los árboles & 0,997 & Modelo (ángulo de perfil y horizonte)\\
+Temperatura ($\overline{T}_{cel}$ = 53~°C) & 0,918 & Modelo (SAPM, $\gamma=-0{,}29$\,\%/°C)\\
+Reserva por obstáculos no modelados & 0,990 & \supuesto{}\\
+Suciedad & 0,970 & \supuesto{} (estación seca, 8,5°)\\
+Calidad del módulo, LID y degradación del año 1 & 0,990 & \supuesto{}\\
+Desajuste (con optimizadores) & 0,995 & \supuesto{}\\
+Optimizadores (98,6\,\% ponderada) & 0,986 & Ficha S650B\\
+Cableado DC & 0,991 & Cálculo (0,92\,\% a plena carga)\\
+Inversor (CEC 97\,\%) & 0,970 & Ficha SE10KUS\\
+Cableado AC & 0,995 & Cálculo (0,46\,\% a plena carga)\\
+Disponibilidad & 0,990 & \supuesto{}\\
+\midrule
+\textbf{PR respecto a GHI} & \textbf{0,768} & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Potencia instalada y relación DC/AC}
+La potencia está limitada por el área útil (sección~\ref{sec:distribucion}). El consumo estimado, de \SI{151}{\mega\watt\hour} al año, permitiría un sistema cinco veces mayor sin excedentes significativos.
+\begin{equation}
+P_{DC}=36\times\SI{580}{\watt}=\SI{20.88}{\kWp};\quad P_{AC}=2\times\SI{10}{\kilo\watt}=\SI{20}{\kilo\watt};\quad \frac{P_{DC}}{P_{AC}}=1{,}04.
+\end{equation}
+
+Por inversor, la potencia DC es de 10,44~kWp, menor que el límite de 17,5~kW. Con una irradiancia en el plano que rara vez supera los 1000~W/m\textsuperscript{2} y una temperatura de celda de unos 53~°C, el recorte de potencia (\emph{clipping}) es prácticamente nulo. La relación DC/AC de 1,04 está dentro del rango que el fabricante admite (hasta 1,75 por inversor: 17\,500/10\,000).
+
+\subsection{Configuración serie y verificación por temperatura}
+Con optimizadores, la tensión del string la regula el inversor dentro de 370--600~V. Las verificaciones de tensión y corriente se hacen en dos niveles, módulo y string, como se detalla a continuación.
+
+\textbf{Nivel módulo (entrada del optimizador, NEC 690.7):}
+\begin{align}
+V_{oc,\text{mín}\,T} &= 52{,}2\,[1+(-0{,}0025)(5-25)] = \SI{54.8}{\volt} \leq \SI{85}{\volt}\ \checkmark\\
+I_{sc,70^\circ C} &= 13{,}93\,[1+0{,}0005(70-25)] = \SI{14.24}{\ampere} \leq \SI{15}{\ampere}\ \checkmark\ \text{(valores frontales \cite{seBifacial})}\\
+I_{sc,70^\circ C}^{\text{(+5~\% post.)}} &= 14{,}63\,[1+0{,}0005(70-25)] = \SI{14.96}{\ampere} \leq \SI{15}{\ampere}\ \text{(referencia)}
+\end{align}
+
+\textbf{Nivel string:}
+\begin{align}
+P_{string} &= 9\times 580 = \SI{5220}{\watt} \leq \SI{6000}{\watt}\ \text{(nominal en 208~V)}\ \checkmark\\
+n_{opt} &= 9:\quad 8 \leq 9 \leq 25\ \text{(red de 208~V)}\ \checkmark\\
+I_{string} &= \frac{5220\times0{,}986}{370} = \SI{13.9}{\ampere} \leq \SI{15}{\ampere}\ \checkmark \quad\text{(peor caso, tensión mínima)}\\
+V_{string} &\in [370;\ 600]~\text{V}\ \text{(regulada por el inversor; entrada DC máx. del SE10KUS: 600~V)}\\
+V_{segura} &= 9\times\SI{1}{\volt}=\SI{9}{\volt} \leq \SI{80}{\volt}\ \text{(dentro del arreglo, NEC 690.12)}\ \checkmark
+\end{align}
+
+En una arquitectura con optimizadores la tensión del string no es la suma de las tensiones de los módulos ni de las salidas máximas de los optimizadores: la fija el inversor dentro de su rango de operación (370--600~V), y el SE10KUS admite como máximo 600~V de entrada DC. Por eso el string se valida solo con las reglas del fabricante (NEC 110.3(B) y 690.4(B)): número de optimizadores por string (8 a 25 en 208~V), potencia por string (5220 $\leq$ 6000~W nominales), potencia DC por inversor (10\,440 $\leq$ 17\,500~W) y compatibilidad módulo--optimizador (sección~\ref{sec:equipos}). A la tensión mínima de 370~V, dos strings suman 27,8~A, justo el límite de entrada del inversor. Este valor solo se alcanza con condiciones STC simultáneas a la tensión mínima.
+
+\subsection{Conductores y caída de tensión}
+\textbf{DC (NEC 690.8).} La corriente máxima del circuito de salida de un convertidor DC-DC es su corriente nominal de salida: $I_{max}=\SI{15}{\ampere}$. Los cálculos son:
+\begin{gather}
+I_{cond}\geq1{,}25\,I_{max}=\SI{18.75}{\ampere};\qquad A_{\#10,90^\circ C}\cdot F_T\cdot F_{ag}=40\times0{,}96\times0{,}80=\SI{30.7}{\ampere}\geq18{,}75\ \checkmark\\
+\Delta V_{DC}=\frac{2\,L\,I\,R}{V}=\frac{2(30)(13{,}9)(0{,}00407)}{370}=0{,}92\,\text{\%}\leq1\,\text{\%}\ \checkmark
+\end{gather}
+La ampacidad en el borne de 75~°C es de 35~A, mayor que 18,75~A. $F_T$ corresponde a un ambiente de 31--35~°C (Tabla 310.15(B)(1)), y $F_{ag}$ a 4 conductores portadores por EMT (Tabla 310.15(C)(1)). La resistencia del \#10 de cobre trenzado es de \SI{4.07}{\ohm\per\kilo\meter} a \SI{75}{\celsius} (NEC Cap.~9, Tabla 8). Las del \#8 y el \#4 son \SI{2.55}{\ohm\per\kilo\meter} y \SI{1.01}{\ohm\per\kilo\meter}. La caída se calcula con la corriente a la tensión mínima de operación (370~V), que es el peor caso; a la tensión típica de 400~V resulta de 0,79\,\%.
+
+\textbf{AC.} Los cálculos son:
+\begin{gather}
+I_{OCPD,inv}=1{,}25(27{,}8)=\SI{34.75}{\ampere}\rightarrow\SI{35}{\ampere};\qquad \#8:\ 50\times0{,}94=\SI{47}{\ampere}\geq35\ \checkmark\\
+I_{OCPD,total}=1{,}25(2\times27{,}8)=\SI{69.5}{\ampere}\rightarrow\SI{70}{\ampere};\qquad \#4:\ 85\times0{,}94=\SI{79.9}{\ampere}\geq70\ \checkmark\\
+\Delta V_{AC}=\frac{\sqrt3\,I\,R\,L}{V}:\qquad \text{C-AC1/2: } \frac{\sqrt3(27{,}8)(2{,}55\times10^{-3})(3)}{208}=0{,}18\,\text{\%}\ \checkmark\\
+\text{C-AC3 + C-AC4: } \frac{\sqrt3(55{,}6)(1{,}01\times10^{-3})(6)}{208}=0{,}28\,\text{\%};\qquad \text{total AC: }0{,}46\,\text{\%}\leq1\,\text{\%}\ \checkmark
+\end{gather}
+
+\begin{table}[H]
+\centering\small
+\caption{Resumen de conductores y protecciones.}\label{tab:conductores}
+\begin{tabular}{L{2.4cm}L{3.6cm}lrrL{2.6cm}}
+\toprule
+\textbf{Circuito} & \textbf{Conductor} & \textbf{EGC} & $I_{dis}$ (A) & $A_{corr}$ (A) & \textbf{OCPD}\\
+\midrule
+C-DC1--4 & 2\#10 PV Wire & \#10 & 18,75 & 30,7 & No requiere (690.9)\\
+C-AC1/2 & 3\#8 + N\#8 THWN-2 & \#10 & 34,75 & 47,0 & 35~A/3P\\
+C-AC3 / C-AC4 & 3\#4 + N\#4 THWN-2 & \#8 & 69,5 & 79,9 & CB-INT 70~A (CD-FV)\\
+Derivación & 3\#4 + N\#4 THWN-2, $\leq$ 3~m & \#8 & 69,5 & 79,9 & CB-INT 70~A al final\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Canalizaciones (ocupación máxima del 40\,\%).}
+\begin{itemize}
+\item EMT 3/4'' para DC: 4~PV Wire de unos 26~mm\textsuperscript{2} cada uno, más un \#10 de 13,6~mm\textsuperscript{2}, suman 119~mm\textsuperscript{2} (diámetro exterior supuesto del PV Wire: 5,8~mm). El límite es de 138~mm\textsuperscript{2}, por lo que cumple. El margen es pequeño, por lo que en la compra se exige PV Wire de diámetro exterior de 6,3~mm o menos; con un cable más grueso se usa EMT de 1'' (límite de 222~mm\textsuperscript{2}).
+\item EMT 3/4'' para C-AC1 y C-AC2: 4\#8 THWN-2 (23,6~mm\textsuperscript{2} cada uno) más un \#10 (13,6~mm\textsuperscript{2}) suman 108~mm\textsuperscript{2}, menos que el límite de 137~mm\textsuperscript{2}.
+\item EMT 1-1/4'' para C-AC3 y C-AC4: 4\#4 THWN-2 (53,2~mm\textsuperscript{2} cada uno) más un \#8 (23,6~mm\textsuperscript{2}) suman 236~mm\textsuperscript{2} (NEC Cap.~9, Tabla 5). El límite es de 386~mm\textsuperscript{2}, por lo que cumple.
+\end{itemize}
+
+\subsection{Protecciones, desconexión y sobretensiones}
+\begin{itemize}
+\item \textbf{Fusibles de string:} no se requieren. En una falla, la corriente inversa que aporta el otro string está limitada a 15~A por los optimizadores. Ese valor es menor que la ampacidad corregida (30,7~A) y que el fusible serie máximo del módulo (30~A), según NEC 690.9(A)(1). El inversor tiene además fusibles DC internos de 25~A (un polo) \cite{seInv}, mayores que $1{,}25\times15=\SI{18.75}{\ampere}$ y no mayores que el fusible serie máximo del módulo (30~A).
+\item \textbf{Capacidad interruptiva (NEC 110.9, 110.10):} con TS-01 de 112,5~kVA ($I_n=\SI{312.3}{\ampere}$ según la placa) y la \textbf{impedancia de placa del 3,57\,\%}, la corriente de falla trifásica en su secundario es como máximo $312{,}3/0{,}0357\approx\SI{8.7}{\kilo\ampere}$ (con barra infinita aguas arriba; la impedancia del transformador del ICE y de los 100~m de acometida la reducen). Al agregar la impedancia de los conductores \#4 (NEC Cap.~9, Tabla~9; $X/R=3$ supuesto para TS-01), la falla baja a unos \SI{6.8}{\kilo\ampere} en el IFV y \SI{6.5}{\kilo\ampere} en el TFV (\texttt{calc/electrico.py}). El HDL36070 (25~kA a 240~V) supera la falla en CD-FV con amplitud; los QOB335 y QOB320 (10~kA) tienen un margen de más del 50\,\% en el TFV; y al HU363RB, que no interrumpe fallas, se le exige un SCCR de 10~kA o más con protección por interruptor. El aporte del sistema FV es de unos $1{,}2\times55{,}6\approx\SI{67}{\ampere}$, despreciable.
+\item \textbf{Barras del TFV (NEC 705.12(B)(3)(3)):} el TFV solo recibe fuentes FV. La suma de los interruptores conectados a sus barras, excluido el dispositivo que las protege (CB-INT de 70~A, aguas arriba), es $35+35+20=\SI{90}{\ampere}$ (CB-1, CB-2 y el interruptor de 20~A del SPD-AC), menor que las barras de 100~A. Se coloca el rótulo que exige esa regla (Cuadro~\ref{tab:rotulos}).
+\item \textbf{SPD:} tipo 2 en DC y en AC integrados en cada SE10KUS \cite{seInv}, más un SPD-AC tipo 2 en el TFV, con $U_c$ adecuada para 120~V línea-neutro (de la misma familia que el SPD del TP existente). Se coordinan con el SPD de 50~kA que exige E07 en los tableros.
+\item \textbf{Riesgo por rayo (NFPA 780, Anexo L) \cite{nfpa780}.}\label{sec:rayo} Área equivalente de captación del edificio ($18\times15{,}05$~m, altura de 10~m): $A_e=LW+6H(L+W)+9\pi H^2=\SI{5081}{\meter\squared}$. Con $N_g=15$ rayos/km$^2$ por año \supuesto{} y $C_1=0{,}5$ (entorno de altura igual o menor), la frecuencia esperada es $N_D=N_g A_e C_1 10^{-6}=0{,}038$ por año. La frecuencia tolerable, con estructura y cubierta metálicas ($C_2=0{,}5$) y $C_3=C_4=C_5=1$, es $N_C=1{,}5\times10^{-3}/0{,}5=0{,}003$ por año. Como $N_D>N_C$ (y lo sería para cualquier $N_g$ mayor de 1,2), se recomienda a la UTN instalar un sistema de protección contra rayos en el edificio. Es una condición existente, que no crea el sistema FV. El diseño FV queda preparado: barra de unión en el alero para conectar el arreglo a ese sistema y SPD del TFV sustituible por uno tipo 1, más un SPD tipo 1 en la entrada DC, si el sistema se instala.
+\end{itemize}
+
+\subsection{Verificación de la interconexión}
+\label{sec:calc_inter}
+\textbf{Alternativa B, elegida (NEC 240.21(C)(2), 705.12(B)(2), 240.21(B)(1), 450.3(B)):}
+\begin{itemize}
+\item \textbf{Protección de los conductores secundarios (240.4(F), 240.21(C)(2)):} TS-01 es delta-estrella, por lo que su protección primaria no protege los conductores del secundario. Se instala IS-TS01, de 400~A, a 3~m o menos de los bornes secundarios. Los conductores TS-01--IS-TS01 (2 $\times$ \#4/0 Cu por fase, $2\times230=460$~A a 75~°C) tienen una ampacidad mayor que la capacidad del interruptor en el que terminan ($460\geq400$~A), y van en canalización dentro del cuarto eléctrico.
+\item \textbf{Transformador TS-01 (450.3(B)):} con protección en el secundario, el primario de 200~A es menor que el 250\,\% de 135,3~A (338~A); el secundario de 400~A es el valor normalizado siguiente al 125\,\% de 312,3~A (390~A), como permite la nota 1 de la Tabla 450.3(B).
+\item \textbf{Regla de alimentadores (705.12(B)(2)(1)):} aguas abajo de IS-TS01, el alimentador hacia el ATS tiene 460~A de ampacidad. La protección en el extremo de carga del alimentador, del lado de la conexión FV, es el principal de 400~A del TP, menor que la ampacidad del alimentador (inciso (b)); además, $400 + 1{,}25(55{,}6)=469{,}5$~A apenas supera los 460~A, por lo que el diseño se apoya en el inciso (b) y no en el (a).
+\item \textbf{Derivación de 3~m (240.21(B)(1) con 705.12(B)(2)(2)):} la derivación se dimensiona con la suma de la capacidad del dispositivo que protege el alimentador y el 125\,\% de la corriente de la fuente FV:
+\begin{equation}
+I_{tap}\geq\frac{400+1{,}25\,(55{,}6)}{10}=\SI{47.0}{\ampere}\leq\SI{79.9}{\ampere}\ (\#4)\ \checkmark
+\end{equation}
+Además, la ampacidad del conductor de la derivación no es menor que la capacidad del dispositivo en el que termina: el interruptor CB-INT de 70~A, dentro del mismo gabinete CD-FV y a menos de 3~m ($79{,}9\geq70$~A), y la derivación no sale del cuarto eléctrico.
+\item \textbf{Retroalimentación por TS-01:} los 20~kW son mucho menores que sus 112,5~kVA, y la conexión delta-estrella no se altera.
+\end{itemize}
+
+\textbf{Alternativa A, descartada:} con las barras de 800~A del TP instalado, NEC 705.12(B)(3)(2) (125\,\% de la corriente de salida de la fuente más la capacidad del dispositivo que protege la barra): $400+1{,}25(55{,}6)=469{,}5\leq1{,}2(800)=960$~A. Numéricamente cumple, pero se descarta por la razón operativa de la sección~\ref{sec:interconexion}.
+
+\subsection{Cargas estructurales y acción del viento}
+\label{sec:estructura}
+\textbf{Carga muerta agregada.} Se suman los módulos, los optimizadores y una reserva de 4~kg por módulo para abrazaderas y cableado \supuesto{}:
+\begin{equation}
+M=36\,(31{,}6+0{,}79+4)=\SI{1310}{\kilogram};\qquad q_D=\frac{1310\times9{,}81}{95{,}6}=\SI{0.13}{\kilo\pascal}.
+\end{equation}
+
+\textbf{Viento (Lineamientos CFIA 2023 \cite{cfiaViento}, procedimiento prescriptivo).} Se aplica de forma consistente el procedimiento nacional, sin mezclar coeficientes de otra norma. Los datos son:
+\begin{itemize}
+\item \textbf{Velocidad básica:} el cantón de Alajuela, todos sus distritos, está en la Zona~III (Tabla 3-1), y la Figura 3-1 asigna a la Zona~III $V_b=\SI{115}{\kilo\meter\per\hour}$ para $T_R=50$~años. El valor de 90~km/h de la sección 3.1.3 es solo el límite inferior de una determinación alternativa con datos climáticos, que aquí no se usa.
+\item \textbf{Categoría de diseño por viento (Tabla 2-1):} la clasificación sigue al Código Sísmico de Costa Rica. Un edificio educativo con capacidad mayor de 300 estudiantes es del grupo C (ocupación especial) \cite{cscr2010}, que corresponde a la \textbf{categoría II (Especial)}; con menos estudiantes sería grupo D, categoría III (Normal). Como no se conoce la capacidad certificada del edificio, se adopta la categoría II \supuesto{}, que da las presiones mayores. Sus objetivos de desempeño (sección 2.5, Tabla 2-5) son: nivel de servicio NDS con $T_R=50$~años y nivel último NDU-1 (completamente operativo) con $T_R=1700$~años.
+\item \textbf{Coeficiente de recurrencia (Tabla 3-3, zonas II a V):} $C_r=[0{,}36+0{,}10\ln(12\,T_R)]^2$. Para $T_R=50$~años, $C_r=1{,}00$; para $T_R=1700$~años, $C_r=1{,}83$. (Como referencia, en la categoría III: 0,70 con $T_R=10$~años y 1,60 con $T_R=700$~años.)
+\item \textbf{Coeficiente de direccionalidad (3.3.4 y Tabla 3-5):} $C_d=1{,}0$ en condiciones de servicio y $C_d=0{,}85$ para edificaciones y componentes en las combinaciones de resistencia.
+\item Exposición C (conservadora, por el terreno abierto al este según E01): $\alpha=9{,}5$, $z_g=274$~m y $z_{min}=4$~m (Tabla 3-2). Altura $h\approx\SI{8.2}{\meter}$ (A02). $C_t=1$: el sitio no cumple las condiciones de cerro o escarpe aislado.
+\end{itemize}
+\begin{gather}
+q_b=0{,}005\,V_b^2=0{,}005(115)^2=\SI{66.1}{\kilo\gram\per\meter\squared};\qquad C_e=2{,}01\left(\tfrac{8{,}2}{274}\right)^{2/9{,}5}=0{,}96\\
+q_{h,\text{serv}}=q_b\,C_e\,C_r\,C_t\,C_d=66{,}1(0{,}96)(1{,}00)(1)(1{,}0)=\SI{63.5}{\kilo\gram\per\meter\squared}=\SI{622}{\pascal}\\
+q_{h,\text{últ}}=66{,}1(0{,}96)(1{,}83)(1)(0{,}85)=\SI{98.7}{\kilo\gram\per\meter\squared}=\SI{968}{\pascal}
+\end{gather}
+
+\textbf{Zonas de borde.} El ancho es $a=\min(0{,}1\times15{,}05;\ 0{,}4h)=\SI{1.5}{\meter}$, y no puede ser menor que 0,9~m. El arreglo está a 2,32~m o más de los bordes, por lo que queda completamente en la zona interior (zona 1).
+
+\textbf{Presión sobre el módulo.} Los lineamientos no tienen coeficientes específicos para paneles solares. El módulo coplanar, a pocos centímetros de la lámina, se trata como un componente del techo (sección 4.4.3, edificios bajos con $h<18$~m) con la Ecuación 4-8, $p=q_h[(GC_p)-(GC_{pi})]$, y los coeficientes de la Figura A-13 (techo de un agua, $3^\circ<\theta\leq10^\circ$; la cubierta tiene 8,5°): en la zona interior 1, $GC_p=-1{,}1$ para cualquier área efectiva y $GC_p\approx+0{,}26$ para el área de un módulo (2,58~m$^2$). El edificio es cerrado, $GC_{pi}=\pm0{,}18$ (Tabla 4-1). No se usan los factores $\gamma_E$ ni $\gamma_a$ de ASCE 7-16, que pertenecen a otra metodología \cite{asce7}; el Anexo D de los lineamientos remite como normativa complementaria a ASCE/SEI 7-10, no a ASCE 7-16.
+\begin{gather}
+p_{\text{serv}}=622\,(-1{,}1-0{,}18)=\SI{-0.80}{\kilo\pascal};\qquad p_{\text{últ}}=968\,(-1{,}1-0{,}18)=\SI{-1.24}{\kilo\pascal}\\
+p_{\text{últ}}^{+}=968\,(0{,}26+0{,}18)=\SI{+0.42}{\kilo\pascal}
+\end{gather}
+La succión última, 1,24~kPa (126~kg/m$^2$), es mayor que la presión mínima de componentes de 80~kg/m$^2$ (sección 4.4.3.1), por lo que rige.
+
+\textbf{Comparación con las capacidades certificadas de la ruta de carga.} Cada presión calculada se compara con la capacidad declarada del componente correspondiente:
+\begin{itemize}
+\item \textbf{Módulo:} carga de diseño de succión $4000/1{,}5=\SI{2.67}{\kilo\pascal}$ \cite{csDatasheet}, mayor que $p_{\text{últ}}=\SI{1.24}{\kilo\pascal}$ (46\,\%).
+\item \textbf{PVKIT 2.0 con el CS6W (tabla UL 2703):} 30~psf = \SI{1.44}{\kilo\pascal} de succión \cite{s5manual}, mayor que $p_{\text{últ}}$ (86\,\%). Se compara con la presión última, del lado conservador, porque la tabla del fabricante da cargas de diseño.
+\item \textbf{Abrazaderas:} fuerzas de las combinaciones $0{,}9\,CP - CV$ (Ec. 5-4) y $CP - CV_s$ (Ec. 5-5):
+\begin{gather}
+F_{\text{mód,últ}}=1{,}239\times2{,}583-0{,}9\,(0{,}318)=\SI{2.91}{\kilo\newton}\\
+F_{\text{mód,serv}}=0{,}797\times2{,}583-0{,}318=\SI{1.74}{\kilo\newton}
+\end{gather}
+Cada módulo se apoya en cuatro abrazaderas, pero en las tres líneas de apoyo interiores cada MidGrab sostiene el borde de dos módulos contiguos: $2\times2{,}91/4=\SI{1.46}{\kilo\newton}$ (último) y $2\times1{,}74/4=\SI{0.87}{\kilo\newton}$ (servicio); en las líneas extremas la carga es la mitad. Con el factor de seguridad de 2 que usa S-5! para sus tablas, aplicado del lado conservador sobre la carga mayorada, cada abrazadera debe tener una carga de ensayo última de al menos $2\times1{,}46\approx\SI{2.9}{\kilo\newton}$ en el perfil SSP380 de calibre HG 24. Esta capacidad la debe confirmar el fabricante con la tabla de cargas del perfil real.
+\item \textbf{Lámina, clips y clavadores:} la succión neta total sobre el arreglo es de unos \SI{105}{\kilo\newton} (último), repartida en 90 abrazaderas. Los clips de la lámina y los clavadores C 150$\times$50$\times$2,37 a 1,2~m deben verificarse con estas presiones de servicio y última, sumadas a las de la cubierta. Los planos no certifican esa capacidad.
+\end{itemize}
+No se usa una velocidad de viento ``admisible'' equivalente a la resistencia del módulo: la presión depende de $V_b$, la exposición, la recurrencia, la topografía, la direccionalidad, la geometría y la zona de la cubierta, y la ruta de carga completa (módulo, sujeción, abrazadera, costilla, clips, clavadores y estructura) se verifica con las presiones calculadas. El programa \texttt{calc/electrico.py} recalcula todos los valores para la categoría III o para otra exposición. \textbf{Esta verificación es conceptual y no sustituye el dictamen de un ingeniero estructural.}
+
+\subsection{Almacenamiento}
+No aplica, porque el sistema no incluye baterías.
+
+% =====================================================================
+\section{Análisis del diseño}
+\subsection{Justificación del emplazamiento, la arquitectura y la modalidad}
+\begin{itemize}
+\item \textbf{Emplazamiento:} es un edificio real con planos as-built completos. El consumo diurno es alto, no se ocupa terreno y la cubierta es metálica de junta alzada, lo que permite fijar el arreglo sin perforar.
+\item \textbf{Arquitectura:} dos inversores de string con optimizadores. Es la única combinación evaluada que reúne al mismo tiempo la certificación que declara el fabricante para lo que pide el ICE (UL 1741 SB / IEEE 1547-2018, sujeta al informe ICE-LEE/ECA), el apagado rápido a nivel de módulo, la tensión nativa de 208~V y la mitigación de sombras de las condensadoras.
+\item \textbf{Modalidad:} interconectada con excedentes. La mayor parte se autoconsume y los excedentes de fin de semana se aprovechan.
+\end{itemize}
+
+\subsection{Diferencias respecto a otros tipos de instalación}
+Las medidas aplicadas a este caso difieren de las de una vivienda y de un terreno abierto en varios puntos (Cuadro~\ref{tab:comparacion}):
+\begin{itemize}
+\item \textbf{Frente a una vivienda:} hay un generador y un ATS, el sistema es trifásico de 208~V con un transformador intermedio, no se puede usar la regla del 120\,\% por razones operativas, los pasillos de Bomberos son de 1,2~m (no de 0,9~m), hay equipos de techo y se requiere un estudio del ICE.
+\item \textbf{Frente a un terreno abierto:} aquí no hacen falta cimentación, cercado, drenaje ni control de vegetación. A cambio, la estructura existente limita la carga, el apagado rápido es obligatorio y el arreglo debe ubicarse en la zona interior de viento.
+\end{itemize}
+
+\subsection{Ventajas y desventajas}
+\begin{table}[H]
+\centering\small
+\caption{Ventajas y desventajas de la solución.}\label{tab:vd}
+\begin{tabularx}{\textwidth}{L{2.0cm}YY}
+\toprule
+& \textbf{Ventajas} & \textbf{Desventajas}\\
+\midrule
+Técnicas & Apagado rápido y monitoreo por módulo; cubierta sin perforar; caídas de tensión bajas; arreglo en la zona interior de viento; sin paralelo con el generador. & Orientación ENE (pierde menos del 2\,\% respecto a la horizontal y produce menos en la tarde); 36 componentes electrónicos sobre la cubierta; dependencia del ecosistema SolarEdge.\\
+Económicas & Alrededor del 90\,\% de autoconsumo, que evita el cargo de energía de la tarifa. LCOE de unos ₡46/kWh, menor que el cargo de energía de T-CS (₡50,72/kWh) y T-CO (₡59,67/kWh) del pliego 2026; retorno simple de 8 a 10 años (sección~\ref{sec:viabilidad}). & Margen estrecho con T-CS: con una inversión mayor de unos USD~1,25/Wp, el LCOE iguala el cargo de energía evitado. La tarifa aplicable depende de la factura del NISE. Los excedentes se pagan a la mitad del cargo de energía. Costo de los optimizadores y del bloque de derivación; costo del medidor bidireccional si la medición del servicio es indirecta.\\
+Operativas & Dos inversores dan redundancia parcial; el IFV es accesible desde el exterior; la detección de fallas es remota. & La limpieza a 8,5° requiere acceso a la cubierta; hay que coordinar con el mantenimiento de A/C; los equipos exteriores quedan expuestos a la intemperie bajo el alero.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cumplimiento normativo}
+{\small
+\begin{longtable}{L{4.0cm}L{8.2cm}L{2.6cm}}
+\caption{Matriz de cumplimiento de los requisitos principales.}\label{tab:cumplimiento}\\
+\toprule
+\textbf{Requisito} & \textbf{Evidencia} & \textbf{Estado}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Requisito} & \textbf{Evidencia} & \textbf{Estado}\\
+\midrule\endhead
+Ley 10086 / Decreto 43879: modalidad y trámite & Modalidad con excedentes; trámite ICE (sección~\ref{sec:tramites}) & Cumplimiento preliminar\\
+ICE (DC-03-IT-21-001, 5.5.4): UL 1741 SA/SB vigente e IEEE 1547-2018, con informe ICE-LEE/ECA & La ficha del SE10KUS declara UL 1741 SB e IEEE 1547-2018 \cite{seInv}; falta el informe de verificación documental & Pendiente de verificación\\
+ICE (5.7): categoría B y modos de control & Configuración de la sección~\ref{sec:config_ice}; ajustes finales según el ICE & Cumplimiento preliminar\\
+ICE (5.4.7--5.4.12): SCADA si el abonado es binómico & COM-ICE previsto; tarifa por confirmar con la factura del NISE & Pendiente de verificación\\
+ICE: estudio técnico de capacidad del circuito & Solicitud GD02 (etapa 2) & Pendiente de verificación\\
+NEC 690.4(B): equipos listados & UL 61730, UL 1741, UL 2703, UL 489, UL 98 & Cumple\\
+NEC 690.7, 690.8, 690.9 & Secciones de cálculo & Cumple\\
+NEC 690.11 y 690.12 & AFCI y PVRSS SolarEdge & Cumple\\
+NEC 690.13, 690.15 y 705.20 & IFV y desconexión DC integrada & Cumple\\
+NEC 705.12(B)(2), 240.4(F), 240.21(C)(2) y 240.21(B)(1) & IS-TS01 de 400~A a la salida de TS-01; regla de alimentadores; derivación de 3~m de 47,0~A $\leq$ 79,9~A terminada en CB-INT & Cumplimiento preliminar (revisión del profesional e inspección)\\
+NEC 110.9, 110.10, 110.26, 240.24, 450.3(B) & Falla $\leq$ 8,7~kA en CD-FV, 6,8~kA en el IFV y 6,5~kA en el TFV; espacio de trabajo y alturas (FV-02); protección de TS-01 & Cumple\\
+RTCR 458: profesional CFIA y declaración jurada (art. 5.1.3) & Trámite de implementación (sección~\ref{sec:tramites}) & Etapa de obra\\
+RTCR 458: conformidad de materiales (art. 5.3) & Equipos listados (Cuadro~\ref{tab:normasint}) & Cumple\\
+RTCR 458: verificación UVIE (arts. 5.2.1, 5.2.2) & Ocupación educativa y de oficinas, sin reunión de 100 o más personas \supuesto{} & No aplica\\
+NEC 690.41--690.47 y 250.122 & Lámina FV-04; orejetas UL 2703 por módulo & Cumple\\
+NFPA 1 §11.12 (Bomberos) & Lámina FV-01: perímetro de 1,2~m & Cumple\\
+NFPA 780 (rayo) & Evaluación simplificada; sistema recomendado al propietario; arreglo preparado para unirse a él & Cumple (recomendación)\\
+CFIA: viento & Zona III, $V_b=115$~km/h, categoría II \supuesto{}; servicio y último separados; zona interior; 2,9~kN de carga de ensayo por abrazadera & Pendiente de verificación estructural\\
+Capacidad estructural & Sin certificación en los planos; no se asume capacidad & Sujeto a dictamen\\
+Compatibilidad PVKIT--SSP380 & Abrazadera S-5-U para costilla vertical HG 24 \supuesto{} & Pendiente de verificación\\
+Medición del ICE & Indirecta en 480~V en el nicho del transformador \supuesto{} (FV-03) & Pendiente de verificación\\
+Ley 10086 / ARESEP: tarifas RED & Escenarios con y sin tarifa de acceso, excedentes y TDER (sección~\ref{sec:viabilidad}) & Evaluado\\
+\bottomrule
+\end{longtable}}
+{\footnotesize Los estados ``Cumple'' corresponden a verificaciones de diseño cerradas en este documento; ``Cumplimiento preliminar'' indica que el diseño se ajusta al requisito pero falta la revisión del profesional responsable, los ajustes del ICE o la inspección; ``Pendiente de verificación'' indica que el cumplimiento depende de un documento o estudio externo. Inversores: en la solicitud al ICE se adjunta el certificado de la variante y del firmware comprados, con el informe ICE-LEE/ECA.\par}
+
+\subsection{Trámites, permisos, inspecciones y coordinación}
+\label{sec:tramites}
+\begin{enumerate}
+\item Obtener la autorización escrita de la UTN como propietaria y presentar, con la factura del servicio, la consulta al ICE sobre la aplicación de la tarifa de acceso.
+\item Levantamiento de obra previo a la construcción, en el que el profesional responsable comprueba en sitio los supuestos de diseño del Cuadro~\ref{tab:supuestos} (perfil de la lámina, medición del ICE, longitudes en el cuarto eléctrico). El registro del 5 de octubre de 2026 ya cubrió las fachadas, las coordenadas, el sentido de la pendiente y las placas de IP, TS-01, ATS, TP y UPS (Anexo~\ref{sec:fotos}).
+\item Antes de comprar los inversores, solicitar al ICE-LEE (icelee@ice.go.cr) o al ECA el informe de verificación documental del certificado UL 1741 SB / IEEE 1547-2018 del SE10KUS (DC-03-IT-21-001, 5.5.4; costo externo de USD~135 en el ICE-LEE).
+\item Confirmar con la factura del NISE si la tarifa del servicio es monómica o binómica. Si es binómica, coordinar con el ICE el protocolo, el mapa de registros y el medio físico de COM-ICE (5.4.7--5.4.12).
+\item Compra de los equipos con las especificaciones de este documento: carga de ensayo última de 2,9~kN por abrazadera S-5-U en el perfil SSP380, IS-TS01 de 400~A, SCCR de 10~kA en el IFV, diámetro del PV Wire y certificados UL 1741 SB de los inversores.
+\item Solicitar el dictamen estructural de la cubierta (firmado y registrado en el CFIA).
+\item Preparar los planos eléctricos y la memoria de cálculo firmados, registrarlos en APC, y obtener el visado y la boleta de sellado eléctrico.
+\item Consultar a Control Constructivo de la Municipalidad de Alajuela la clasificación del trámite municipal (trabajo de mantenimiento, permiso de construcción u otra categoría) y tramitar el que corresponda; consultar a la Ingeniería de Bomberos por la revisión de planos.
+\item ICE, etapa GD01: solicitud (DC-03-FO-21-001) con la declaración jurada de perfil de consumo (DC-03-FO-21-004), los certificados de los inversores, el plano visado y la documentación del profesional.
+\item ICE, etapa 2: estudio técnico (DC-03-FO-21-002), incluida la capacidad de penetración del circuito, con el informe ICE-LEE/ECA de los inversores. En esta etapa el ICE fija los ajustes de categoría B y la curva volt-var para el punto de acople común.
+\item Construcción y pruebas IEC 62446-1 (lámina FV-04): continuidad, aislamiento, polaridad, apagado rápido y anti-isla con el ATS.
+\item Declaración jurada del profesional responsable ante el CFIA (RTCR 458, art. 5.1.3). Si el edificio está sujeto a verificación periódica (ocupación de reunión de 100 o más personas), se incorpora la ampliación FV en el informe de la UVIE.
+\item Inspección del ICE (etapa 3, DC-03-FO-21-003). Solo si esta inspección resulta infructuosa (sistema distinto al declarado, adecuaciones no realizadas o imposibilidad de acceso) se paga la reinspección de la etapa 4.
+\item Instalación del medidor bidireccional, firma del contrato de servicio de interconexión (DC-03-FO-21-006) y puesta en servicio.
+\end{enumerate}
+
+\subsection{Riesgos y medidas de mitigación}
+\label{sec:riesgos}
+{\small
+\begin{longtable}{L{2.2cm}L{5.4cm}L{7.2cm}}
+\caption{Matriz de riesgos.}\label{tab:riesgos}\\
+\toprule
+\textbf{Tipo} & \textbf{Riesgo} & \textbf{Medida}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Tipo} & \textbf{Riesgo} & \textbf{Medida}\\
+\midrule\endhead
+Eléctrico & Arco DC y conectores mal acoplados & AFCI (UL 1699B); conectores de un solo fabricante; torque y termografía\\
+Eléctrico & Paralelo con el generador o retroalimentación a la red caída & Conexión del lado normal; anti-isla IEEE 1547-2018 ($\leq$ 2~s); retardo del ATS de 3~s\\
+Eléctrico & Choque eléctrico de bomberos y técnicos & Apagado rápido de 1~V por módulo; IFV visible y bloqueable; rótulos\\
+Eléctrico & Sobretensiones y rayos & SPD tipo 2 en AC y DC; EGC continuo; evaluación NFPA 780\\
+Mecánico & Desprendimiento por viento & Zona interior; tabla de cargas S-5!; dictamen estructural\\
+Mecánico & Caídas en el trabajo en altura & Línea de vida certificada; acceso por la pasarela; trabajo en parejas\\
+Ambiental & Corrosión y par galvánico & Acero inoxidable y aluminio; nada de cobre en contacto con la lámina\\
+Ambiental & Filtraciones & Sin perforaciones; inspección de las costillas después del montaje\\
+Incendio & Propagación en la cubierta y obstrucción del acceso & Módulo tipo 29; pasillos de 1,2~m; EMT metálica; rótulos\\
+Térmico y ambiental & Sol y lluvia sobre equipos exteriores; reducción de potencia del inversor por temperatura & Envolventes NEMA 3R bajo el alero, en la fachada SSE con sombra del alero a mediodía; 0,27~m entre inversores; rango del inversor hasta 60~°C\\
+Eléctrico & Trabajo cerca de TS-01 y del ATS al instalar IS-TS01 y CD-FV & Desenergizar con el interruptor de 480~V del nicho; bloqueo y etiquetado (LOTO); coordinar el corte con el TEC y la UTN\\
+\bottomrule
+\end{longtable}}
+
+\subsection{Limitaciones del diseño y plan de operación y mantenimiento}
+\textbf{Limitaciones:}
+\begin{itemize}
+\item No hay capacidad estructural certificada.
+\item No se obtuvo la facturación: el consumo, la tarifa y el precio evitado son estimaciones.
+\item La visita técnica fue parcial (registro fotográfico del exterior y del cuarto eléctrico, sin acceso a la cubierta). El azimut de 60° se obtuvo con la imagen satelital y los rumbos de las fotografías ($\pm$10°), no con un levantamiento topográfico; la altura de los árboles se estimó visualmente.
+\item La radiación proviene de una climatología de 1987.
+\item La categoría de diseño por viento (II) y la densidad de rayos $N_g$ son supuestos conservadores; los coeficientes de presión del CFIA no tienen valores específicos para paneles solares y se usaron los de componentes de techo. La vigencia del RTCR 458 se verificó con el aviso de La Gaceta de 2024 y no en el SCIJ.
+\item No se cuenta todavía con el informe ICE-LEE/ECA del inversor, con el estudio técnico de capacidad ni con los ajustes de categoría B que fije el ICE.
+\item La aplicación de la tarifa de acceso de ARESEP al servicio del edificio, y con ella si el abonado es monómico o binómico (que define si se exige el SCADA del ICE), no se confirmó con el ICE.
+\item La medición del ICE, el perfil de la lámina SSP380 y la placa del generador no se pudieron observar; se cubren con los supuestos de diseño del Cuadro~\ref{tab:supuestos}, cuyo efecto sobre el diseño es nulo o acotado.
+\end{itemize}
+
+\textbf{Plan de operación y mantenimiento:}
+\begin{itemize}
+\item Revisión diaria del monitoreo por módulo.
+\item Inspección visual trimestral: suciedad, fijaciones y rótulos.
+\item Limpieza con agua desmineralizada al final de la estación seca, o cuando la pérdida medida supere el 3\,\%, coordinada con el mantenimiento de A/C.
+\item Revisión eléctrica anual: torque, termografía, SPD, aislamiento y prueba del apagado rápido y del IFV.
+\item Revisión estructural de las abrazaderas después de vientos fuertes.
+\end{itemize}
+
+% =====================================================================
+\section{Análisis de viabilidad}
+\label{sec:viabilidad}
+Las secciones anteriores verifican el diseño frente a la normativa, con el estado de cada requisito del Cuadro~\ref{tab:cumplimiento}. Esta sección responde una pregunta distinta: \emph{¿es viable una instalación fotovoltaica en el edificio del Centro Académico de Alajuela?} Para responderla, la viabilidad se descompone en siete dimensiones, cada una con un criterio explícito, y se identifican las condiciones que podrían invertir el resultado.
+
+\subsection{Viabilidad por dimensión}
+{\small
+\begin{longtable}{L{2.3cm}L{4.1cm}L{5.5cm}L{2.3cm}}
+\caption{Evaluación de la viabilidad por dimensión.}\label{tab:viabilidad}\\
+\toprule
+\textbf{Dimensión} & \textbf{Criterio} & \textbf{Evidencia} & \textbf{Resultado}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Dimensión} & \textbf{Criterio} & \textbf{Evidencia} & \textbf{Resultado}\\
+\midrule\endhead
+Espacio y recurso solar & Área útil para al menos 20~kWp y rendimiento $\geq$ \SI{1300}{\kilo\watt\hour\per\kWp} & 36 módulos fuera de pasillos y zonas de borde (FV-01); \SI{1484}{\kilo\watt\hour\per\kWp}; 31,0~MWh con el azimut real de 60° y las sombras del entorno (Cuadro~\ref{tab:energia}) & Viable\\
+Interconexión eléctrica & Punto de conexión conforme a NEC 705.12 sin operación en paralelo con el generador & Nuevo IS-TS01 de 400~A y derivación en el alimentador IS-TS01--ATS (lado normal); 20~kW frente a 112,5~kVA de TS-01 (18\,\%) & Factible (preliminar)\\
+Normativa y equipos & Equipos listados y admisibles para el ICE & UL 61730, PVRSS; UL 1741 SB e IEEE 1547-2018 declarados por el fabricante; informe ICE-LEE/ECA y SCADA (si binómico) pendientes (Cuadro~\ref{tab:cumplimiento}) & Condicionada\\
+Red de distribución & Capacidad de penetración del circuito del ICE & 20~kW equivalen al 2,7\,\% del transformador de 750~kVA; el consumo diurno del edificio absorbe casi toda la generación & Viable, sujeto al estudio del ICE\\
+Estructural & Capacidad residual de cubierta, clavadores y clips & Carga muerta de 0,13~kPa; succión de 0,80~kPa (servicio) y 1,24~kPa (última) con la Zona~III del CFIA; la capacidad no está certificada en S10 & Condicionada al dictamen\\
+Institucional & Autorización del propietario y definición del abonado & Inmueble de la UTN operado por el TEC & Condicionada\\
+Económica & LCOE menor que el precio evitado y retorno menor que la mitad de la vida útil (12,5 años) & LCOE de ₡45--46/kWh; retorno de 10 años con T-CS y de 8 años con T-CO, tarifas 2026 antes de impuestos (Cuadro~\ref{tab:econ}) & Viable con margen estrecho a moderado\\
+\bottomrule
+\end{longtable}}
+
+\subsection{Evaluación económica preliminar}
+\textbf{Método.} Se calcula el flujo de caja de 25 años con el programa \texttt{calc/economico.py}. El ahorro anual es la energía autoconsumida por el precio evitado, más los excedentes por la tarifa de compraventa, menos el reconocimiento económico (TDER) y los costos de operación. El costo nivelado de la energía (LCOE) es el valor presente de los costos dividido entre el valor presente de la energía.
+
+\textbf{Datos de entrada:}
+\begin{itemize}
+\item Producción del año 1: \SI{30985}{\kilo\watt\hour} (Cuadro~\ref{tab:energia}); degradación de 0,4\,\% anual \supuesto{}; vida útil de 25 años.
+\item Fracción autoconsumida: 90\,\% (sección~\ref{sec:consumo}) \supuesto{}.
+\item \textbf{Base fiscal:} todo el análisis se hace \emph{antes de impuestos}. Las tarifas del pliego ordinario se publican sin impuesto de ventas ni otros cargos \cite{icePliego}, y los montos de las tarifas RED, que están sujetos a IVA \cite{iceTarRED}, también se usan sin IVA. No se verificó si el abonado tiene alguna exoneración fiscal, por lo que la evaluación final dependerá de su tratamiento fiscal.
+\item Precio evitado: cargo de energía del bloque mayor de 3000~kWh (tarifa binómica, con cargo por demanda) del pliego del ICE que rige del 1 de enero al 31 de diciembre de 2026 \cite{icePliego}: ₡50,72/kWh en T-CS (preferencial de carácter social, que aplica a instituciones de educación pública; demanda de ₡8\,382,41/kW) y ₡59,67/kWh en T-CO (demanda de ₡9\,861,68/kW). ARESEP archivó el 26 de agosto de 2026 el expediente de ajuste extraordinario, por lo que estos precios siguen vigentes \cite{aresepArchivo}. No se incluye ahorro en el cargo por demanda, porque la demanda máxima mensual puede ocurrir con nubosidad; el resultado es, por lo tanto, conservador.
+\item Excedentes: ₡27,40/kWh; TDER: ₡255/kW por mes sobre 20,88~kW \cite{iceTarRED}.
+\item Costos regulatorios del escenario base: cargos de interconexión de las etapas 1, 2 y 3 (₡16\,453 + ₡125\,978 + ₡116\,590 = ₡259\,021, sin IVA) \cite{iceTarRED} y, como partida separada, la verificación documental del inversor por el ICE-LEE, un costo externo de USD~135 (₡68\,175) que no forma parte de los cargos ARESEP \cite{iceGuia}. La etapa 4 (₡79\,803 sin IVA) es una reinspección que solo procede si la etapa 3 resulta infructuosa \cite{iceGuia,aresepMetod}; no se carga al escenario base y se evalúa como contingencia.
+\item Comunicación con el SCADA del ICE (COM-ICE): USD~400 \supuesto{} en los escenarios A y C, en los que el abonado es binómico; no se incluye en el escenario B (monómico, hipotético).
+\item Inversión: USD 1,10/Wp (USD 23\,000) \supuesto{}; tipo de cambio de ₡505/USD \supuesto{}; operación y mantenimiento de USD 10/kWp por año \supuesto{}; reemplazo de inversores en el año 13 por USD 4000 \supuesto{}; tasa de descuento del 8\,\% \supuesto{}.
+\end{itemize}
+
+\begin{table}[H]
+\centering\small
+\caption{Resultados económicos por escenario de tarifa (inversión de USD 1,10/Wp; tarifas del ICE de 2026, antes de impuestos). El escenario B es una prueba de sensibilidad hipotética, no un caso tarifario real del edificio.}\label{tab:econ}
+\begin{tabularx}{\textwidth}{YL{1.6cm}L{2.7cm}L{1.55cm}L{3.2cm}}
+\toprule
+\textbf{Escenario} & \textbf{Precio evitado} & \textbf{Ahorro neto año 1} & \textbf{Retorno simple} & \textbf{VAN (8\,\%, 25 años)}\\
+ & ₡/kWh & ₡ (USD) & años & ₡ (USD)\\
+\midrule
+A. T-CS binómica, sin tarifa de acceso (base) & 50,72 & 1\,330\,000 (2630) & 10 & +810\,000 (+1610)\\
+B. Sensibilidad hipotética: T-CS monómica con tarifa de acceso (84,76 $-$ 25) & 59,76 & 1\,580\,000 (3130) & 8 & +3\,620\,000 (+7170)\\
+C. T-CO binómica, sin tarifa de acceso & 59,67 & 1\,580\,000 (3130) & 8 & +3\,390\,000 (+6720)\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\caption{Sensibilidad del retorno simple y del LCOE a la inversión.}\label{tab:sensib}
+\begin{tabular}{rcccr}
+\toprule
+\textbf{Inversión} & \multicolumn{3}{c}{\textbf{Retorno simple (años)}} & \textbf{LCOE}\\
+\cmidrule(lr){2-4}
+USD/Wp & A & B & C & ₡/kWh\\
+\midrule
+0,9 & 8 & 7 & 7 & 39\\
+1,1 & 10 & 8 & 8 & 45--46\\
+1,3 & 11 & 10 & 10 & 52\\
+1,5 & 15 & 11 & 11 & 58--59\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Contingencia de reinspección.} Si la inspección de la etapa 3 resultara infructuosa, la etapa 4 agrega ₡79\,803 (sin IVA): el VAN baja a +₡730\,000 (A), +₡3\,540\,000 (B) y +₡3\,310\,000 (C), sin cambiar el retorno simple ni las conclusiones (\texttt{calc/economico.py}).
+
+\textbf{Interpretación.} Con la inversión base (USD~1,10/Wp), el LCOE (unos ₡46/kWh) queda por debajo del cargo de energía de T-CS (₡50,72/kWh) y de T-CO (₡59,67/kWh), por lo que cada kWh generado cuesta menos que el kWh comprado al ICE. Con T-CS el margen es estrecho: el LCOE iguala el precio evitado con una inversión de unos USD~1,25/Wp, mientras que con T-CO el margen se mantiene hasta unos USD~1,5/Wp. La tarifa de acceso de ₡25/kWh aplica únicamente al abonado productor con \emph{tarifa monómica} \cite{iceTarRED}, que en T-CS corresponde al bloque de consumo menor o igual a 3000~kWh (₡84,76/kWh). El consumo estimado del edificio (151~MWh al año, unos 12,6~MWh al mes) lo ubica en el bloque binómico de más de 3000~kWh, al que no aplica esa tarifa. Por eso el escenario B no es un caso tarifario real: se conserva solo como sensibilidad hipotética, calculada de forma coherente con el precio monómico (84,76 $-$ 25 = ₡59,76/kWh), y no se usa para extraer conclusiones sobre el edificio. La tarifa real solo puede confirmarse con la factura del NISE. El tipo de tarifa tiene además un efecto técnico: si el abonado es binómico, el ICE exige la interfaz con su SCADA (COM-ICE), cuyo costo ya se incluye en los escenarios A y C.
+
+Se descarta un beneficio ambiental cuantitativo significativo: la matriz eléctrica costarricense es predominantemente renovable, por lo que las emisiones evitadas por kWh son bajas. El beneficio principal del proyecto es económico y, de forma complementaria, institucional y didáctico (laboratorio real de generación distribuida para la carrera).
+
+\textbf{Alcance del análisis económico.} Sin factura del edificio, confirmación del tipo de tarifa del servicio, tratamiento fiscal del abonado ni cotización de instalación, el resultado se presenta como un rango de escenarios (Cuadros~\ref{tab:econ} y \ref{tab:sensib}) y no como un valor único. El programa \texttt{calc/economico.py} lee la producción de \texttt{calc/energia.json} y recalcula todos los escenarios.
+
+\subsection{Respuesta a la pregunta de viabilidad}
+Con la información disponible, la instalación fotovoltaica en el edificio del Centro Académico de Alajuela es \textbf{preliminarmente factible, condicionada} a las verificaciones que se indican abajo. El diseño muestra que el sistema cabe en la cubierta respetando las restricciones de Bomberos y la zona interior de viento, que puede interconectarse del lado normal del ATS sin comprometer la seguridad del generador de respaldo (con el interruptor IS-TS01) y que la documentación de los equipos elegidos indica compatibilidad con los requisitos del ICE. No se declara cumplimiento normativo definitivo. La viabilidad económica es positiva pero con un margen estrecho a moderado: con las tarifas del ICE de 2026 y antes de impuestos, el retorno es de unos 10 años con T-CS (VAN de +₡0,81 millones) y de 8 años con T-CO, sobre una vida útil de 25.
+
+Esa conclusión depende de seis condiciones, cualquiera de las cuales podría invertirla o encarecer el proyecto:
+\begin{enumerate}
+\item \textbf{Dictamen estructural favorable.} Si la cubierta no admite la carga o la succión adicional, el proyecto requiere refuerzo (con un costo que empeora el retorno) o una reducción del arreglo.
+\item \textbf{Tipo de tarifa y margen económico.} La factura del NISE debe confirmar que el servicio está en el bloque binómico de más de 3000~kWh, como indica el consumo estimado (la tarifa de acceso de ₡25/kWh solo aplica a abonados monómicos). Con T-CS el margen es estrecho: una inversión mayor de unos USD~1,25/Wp o el tratamiento fiscal del abonado pueden anular el beneficio económico.
+\item \textbf{Estudio técnico del ICE.} Debe confirmar la capacidad del circuito y fijar los ajustes de categoría B; por el tamaño relativo del sistema, no se prevé una limitación.
+\item \textbf{Informe ICE-LEE/ECA del inversor.} Sin él, el SE10KUS no es admisible para el ICE aunque su ficha declare UL 1741 SB e IEEE 1547-2018.
+\item \textbf{Tipo de tarifa.} Si el abonado es binómico, debe implementarse la interfaz con el SCADA del ICE (COM-ICE) en los términos que fije el ICE.
+\item \textbf{Autorización de la UTN} como propietaria del inmueble y definición del abonado.
+\end{enumerate}
+
+% =====================================================================
+\section{Conclusiones}
+\begin{enumerate}
+\item \textbf{Viabilidad.} Una instalación fotovoltaica en el edificio del Centro Académico de Alajuela es \textbf{preliminarmente factible, condicionada}, y económicamente viable con un margen estrecho a moderado (LCOE de unos ₡46/kWh frente a ₡50,72/kWh del cargo de energía evitado en T-CS 2026; retorno de unos 10 años y VAN de +₡0,81 millones, antes de impuestos). No se declara cumplimiento normativo definitivo: quedan pendientes el informe de verificación documental del inversor (ICE-LEE o ECA), el estudio técnico de capacidad del ICE con sus ajustes de categoría B, la confirmación del tipo de tarifa (y, si es binómica, la interfaz con el SCADA del ICE), el dictamen estructural con la verificación de viento firmada, la revisión de la interconexión por el profesional responsable y la autorización de la UTN. La rentabilidad depende además de confirmar con la factura del NISE el tipo de tarifa del servicio (binómica, según el consumo estimado) y del tratamiento fiscal del abonado.
+\item \textbf{Resultados.} La geometría y el área útil de la cubierta permiten alojar un sistema de \SI{20.88}{\kWp} respetando los pasillos y exclusiones definidos (pasillos de Bomberos y zona interior de viento); la capacidad estructural final queda condicionada al dictamen del profesional responsable. Con la orientación real (azimut de unos 60°, confirmada con la imagen satelital y el registro fotográfico) y las sombras de las condensadoras y de los árboles, produciría unos \SI{31.0}{\mega\watt\hour} al año (entre 28,4 y 31,0 según la estación del IMN), con un PR de 0,78, y cubriría alrededor del 20\,\% del consumo estimado. El área útil, y no el consumo, es la restricción que define el tamaño del sistema.
+\item \textbf{Normas con mayor influencia.}
+\begin{itemize}
+\item Los requisitos del ICE (DC-03-IT-21-001) obligaron a cambiar el inversor, a prever el informe ICE-LEE/ECA, a configurar los inversores como DER de categoría B con volt-var por defecto y a prever la interfaz con el SCADA si el abonado es binómico.
+\item El NEC 2020 condicionó varias decisiones: con el art. 690.4(B) se cambió el módulo, el art. 690.12 obligó al apagado rápido, y los arts. 705.12, 240.4(F) y 240.21 llevaron al punto de interconexión y al nuevo interruptor secundario IS-TS01.
+\item NFPA 1 §11.12, adoptada por el RNPCI, definió la huella del arreglo.
+\item Los lineamientos de viento del CFIA (Zona~III, $V_b=115$~km/h, objetivos de desempeño por categoría) definieron la ubicación en la zona interior y las cargas exigidas a la sujeción.
+\item La Ley 10086 y ARESEP determinaron la modalidad y el trámite.
+\end{itemize}
+\item \textbf{Equipos certificados y compatibles.} Dos de las alternativas evaluadas inicialmente parecían adecuadas por sus datos eléctricos, pero no tenían las certificaciones exigibles (UL 61730 e IEEE 1547-2018/SB). Usar módulos, optimizadores e inversores documentados como un sistema listado (PVRSS) es lo que permite demostrar el apagado rápido y sustentar la interconexión. Aun así, la declaración del fabricante no basta: el ICE exige verificar la validez y vigencia del certificado mediante un informe del ICE-LEE o del ECA antes de admitir el equipo.
+\item \textbf{Dificultades al llevar las normas a un sitio real.}
+\begin{itemize}
+\item El generador y el ATS cambian el punto de interconexión, y el transformador TS-01, sin protección en su secundario, obliga a agregar un interruptor para que la derivación se haga sobre un alimentador protegido.
+\item Los planos as-built no coinciden en todo con lo instalado: el TP real tiene barras de 800~A y espacios libres, y el ATS es de otro modelo. Solo la verificación de placas en sitio permite cerrar los cálculos de interconexión y de falla.
+\item Las condensadoras ocupan parte de la cubierta.
+\item La orientación hubo que deducirla de las fachadas y confirmarla con la imagen satelital y las fotografías.
+\item Los documentos de un mismo fabricante pueden no coincidir (límite de fusible del listado UL 2703 del PVKIT), lo que obliga a elegir la solución que cumple con ambos (orejetas de tierra propias).
+\item La titularidad del inmueble es de la UTN.
+\item No existen datos certificados de la estructura ni facturación disponible, y parte de la información del edificio tuvo que completarse con supuestos de diseño declarados (Cuadro~\ref{tab:supuestos}).
+\end{itemize}
+\item \textbf{Comparación entre tipos de instalación.} En una vivienda pesan la regla del 120\,\% y los pasillos de 0,9~m. En una cubierta institucional pesan la coordinación con fuentes de respaldo, los equipos de techo, el viento en los bordes y el trámite con estudio. En un terreno pesan la cimentación, el cercado, el drenaje y la capacidad de la red.
+\item \textbf{Estudios y validaciones antes de construir.}
+\begin{itemize}
+\item Dictamen estructural.
+\item Levantamiento topográfico y de sombras.
+\item 12 meses de facturación.
+\item Clasificación del edificio por categoría de diseño por viento y verificación de servicio y último de la cubierta (lámina, clips y clavadores) con $V_b=115$~km/h, a cargo del ingeniero estructural.
+\item Informe de verificación documental del inversor (ICE-LEE o ECA) y ajustes de categoría B que fije el ICE.
+\item Confirmación del tipo de tarifa y, si es binómica, definición con el ICE de la interfaz SCADA.
+\item Levantamiento de obra que confirme los supuestos de diseño (medidor del ICE, perfil SSP380 y abrazadera, longitudes en el cuarto eléctrico).
+\item Diseño del sistema de protección contra rayos que recomienda la evaluación de la sección~\ref{sec:rayo}.
+\item Certificados de los equipos comprados.
+\item Estudio técnico del ICE.
+\item Revisión y firma de un ingeniero electricista incorporado al CFIA.
+\item Facturación real del NISE, confirmación de la aplicación de la tarifa de acceso y cotización del sistema, para cerrar la evaluación económica.
+\end{itemize}
+\end{enumerate}
+
+% =====================================================================
+\begin{thebibliography}{99}
+\bibitem{ley10086} Asamblea Legislativa de Costa Rica. \emph{Ley N.\textsuperscript{o} 10086, Promoción y regulación de recursos energéticos distribuidos a partir de fuentes renovables}, 2021. \url{https://www.pgrweb.go.cr/DOCS/NORMAS/1/VIGENTE/L/2020-2029/2020-2024/2021/17740/14AEF4.HTML}
+\bibitem{reg43879} Poder Ejecutivo. \emph{Decreto Ejecutivo N.\textsuperscript{o} 43879-MINAE, Reglamento a la Ley 10086}. Listado en el marco legal de energía del MINAE \cite{minaeMarco}; texto consultado en \url{https://www.leyesactualizadas.com/documentos/AD47.pdf} (copia no oficial; versión oficial en SCIJ).
+\bibitem{rtcr458} MEIC. \emph{Decreto Ejecutivo N.\textsuperscript{o} 36979-MEIC, RTCR 458:2011, Reglamento de Oficialización del Código Eléctrico de Costa Rica para la Seguridad de la Vida y de la Propiedad}. Texto con reformas (38440-MEIC, 41505-MEIC y 43418-MEIC) a febrero de 2022: \url{https://cfia.or.cr/site/wp-content/uploads/2024/pdf/formularios/inspecciones/decreto-36979-meic-codigo-electrico-de-costa-rica-y-sus-reformas-a-febrero-2022.pdf}
+\bibitem{gacetaNEC} La Gaceta N.\textsuperscript{o} 126, 10 de julio de 2024. Aviso sobre la NFPA 70 (NEC 2020) como Código Eléctrico de Costa Rica. \url{https://ciemicr.org/wp-content/uploads/2024/07/Gaceta-Oficializacion-NFPA-70-2020-MEIC.pdf}
+\bibitem{nfpa70} NFPA. \emph{NFPA 70, National Electrical Code}, ed. 2020. Quincy, MA.
+\bibitem{poasen2026} La Gaceta, 4 de mayo de 2026: reforma integral del reglamento técnico AR-RT-POASEN (vigencia: un mes después de su publicación). Nota de prensa: Delfino.cr. ``Aresep aprueba reforma integral del reglamento Planeación, Operación y Acceso al Sistema Eléctrico Nacional'', mayo de 2026. \url{https://delfino.cr/2026/05/aresep-aprueba-reforma-integral-del-reglamento-planeacion-operacion-y-acceso-al-sistema-electrico-nacional}
+\bibitem{aresepNorm} ARESEP. \emph{Normativa del sector electricidad} (AR-RT-POASEN, AR-NT-SUCOM). \url{https://aresep.go.cr/electricidad/normativa/}
+\bibitem{aresepGD} ARESEP. ``ARESEP aprobó tarifas de generación distribuida'' (tarifas de interconexión, acceso, compraventa de excedentes y reconocimiento económico; vigentes desde el 1 de octubre de 2023). \url{https://aresep.go.cr/noticias/aresep-aprobo-tarifas-generacion-distribuida/}
+\bibitem{aresepMetod} ARESEP. \emph{RE-0076-JD-2023, Metodología tarifaria derivada de la Ley 10086} (ajustada con RE-0126-JD-2024). Publicada por el ICE en \url{https://www.grupoice.com/wps/wcm/connect/e9837ac4-70b5-44cc-8eca-84e05a425beb/RE-0076-JD-2023+Metodolog\%C3\%ADa+tarifaria+derivada+de+la+Ley+10.086+(ajustada+con+RE-0126-JD-2024).pdf}
+\bibitem{iceGD} ICE. \emph{Generación distribuida -- Recursos energéticos distribuidos} (documentos DC-03-IT-21-001, formularios DC-03-FO-21-001 a 005, contrato de servicio de interconexión, RE-0095-JD-2023), actualizado el 28 de septiembre de 2026. \url{https://www.grupoice.com/wps/portal/ICE/electricidad/proyectos-energeticos/generacion-distribuida}
+\bibitem{iceGuia} ICE. \emph{DC-03-PR-21-001, Guía temporal para solicitudes de instalación de RED}, v2.2. \url{https://www.grupoice.com/wps/wcm/connect/256f8300-e62b-4b0e-8988-075794aa5c0c/DC-03-PR-21-001_2023FINALver.+2.2.pdf}
+\bibitem{rnpci} Cuerpo de Bomberos de Costa Rica. \emph{Reglamento Nacional de Protección contra Incendios} (Decreto 37615-MP, reforma 43733), 2023. \url{https://www.bomberos.go.cr/wp-content/uploads/2023/03/RNPCI-2023.pdf}
+\bibitem{nfpa1} NFPA. \emph{NFPA 1, Código de Incendios}, ed. 2012 (en español), sección 11.12, Sistemas fotovoltaicos.
+\bibitem{cfiaViento} CFIA. \emph{Lineamientos para el diseño por viento de edificaciones en Costa Rica}. Alcance N.\textsuperscript{o} 48 a La Gaceta N.\textsuperscript{o} 52, 21 de marzo de 2023. \url{https://cfia.or.cr/site/wp-content/uploads/2024/pdf/descargas/reglamentos/ejercicio/lineamientos-tecnicos-para-el-calculo-y-la-aplicacion-de-las-fuerzas-de-viento-en-el-disenio-y-construccion-de-edificaciones-en-costa-rica.pdf}
+\bibitem{imnRad} Castro, V. \emph{Radiación solar global en Costa Rica}. Nota de investigación N.\textsuperscript{o} 6, Instituto Meteorológico Nacional, 1987. \url{https://www.imn.ac.cr/documents/10179/20909/Estudio+sobre+Radiaci\%C3\%B3n+Global+en+Costa+Rica}
+\bibitem{tecSitio} Tecnológico de Costa Rica. \emph{Centro Académico de Alajuela}. \url{https://www.tec.ac.cr/centro-academico-alajuela}
+\bibitem{csDatasheet} Canadian Solar. \emph{TOPBiHiKu6 CS6W-TB-AG 565--600~W, ficha técnica} V2.0C2\_F68\_D1\_NA, enero de 2025. \url{https://static.csisolar.com/wp-content/uploads/sites/3/2025/04/02142926/CS-Datasheet-TOPBiHiKu6_CS6W-TB-AG_v2.0C2_F68_D1_NA.pdf}
+\bibitem{jinkoV} Jinko Solar. \emph{Tiger Neo 72HL4-(V) 580--605~W, ficha técnica} F8. \url{https://jinkosolarcdn.shwebspace.com/uploads/JKM580-605N-72HL4-(V)-F8-EN.pdf}
+\bibitem{seInv} SolarEdge. \emph{Three Phase Inverters for the 120/208V Grid for North America (SE10KUS, SE17.3KUS)}, ficha técnica. \url{https://knowledge-center.solaredge.com/sites/kc/files/se-three-phase-inverter-with-setapp-208-datasheet-na.pdf}
+\bibitem{seOpt} SolarEdge. \emph{Power Optimizer for North America S440/S500B/S650B}, ficha técnica DS-000018-NA, 3 de abril de 2023 (copia en \texttt{Datasheets/}). Versión vigente en el portal del fabricante: \url{https://knowledge-center.solaredge.com/sites/kc/files/se-power-optimizer-s-series-datasheet-na.pdf}
+\bibitem{fronius} Fronius. \emph{Symo Advanced 10.0-3 208-240, datos técnicos}. \url{https://www.fronius.com/en-us/usa/solar-energy/installers-partners/technical-data/all-products/inverters/fronius-symo-advanced/symo-advanced-10-0-3-208-240}
+\bibitem{fronius480} Fronius. \emph{Symo Advanced 20.0-3 480, datos técnicos}. \url{https://www.fronius.com/en-us/usa/solar-energy/installers-partners/technical-data/all-products/inverters/fronius-symo-advanced/symo-advanced-20-0-3-480}
+\bibitem{froniusUL3741} Fronius. \emph{Fronius Symo Advanced is UL 3741 certified}. \url{https://www.fronius.com/en-us/usa/solar-energy/installers-partners/products-solutions/features/fronius-symo-advanced-ul-3741-certified}
+\bibitem{s5} S-5!. \emph{PVKIT 2.0 -- Solar panels on metal roof}, documentación técnica. \url{https://www.s-5.com/products/solar-panels-on-metal-roof-pvkit-2-0/}
+\bibitem{pvlib} Holmgren, W. F., Hansen, C. W. y Mikofski, M. A. ``pvlib python: a python package for modeling solar energy systems''. \emph{Journal of Open Source Software}, 3(29), 884, 2018.
+\bibitem{klein1977} Klein, S. A. ``Calculation of monthly average insolation on tilted surfaces''. \emph{Solar Energy}, 19(4), 325--329, 1977.
+\bibitem{erbs1982} Erbs, D. G., Klein, S. A. y Duffie, J. A. ``Estimation of the diffuse radiation fraction for hourly, daily and monthly-average global radiation''. \emph{Solar Energy}, 28(4), 293--302, 1982.
+\bibitem{ieee1547} IEEE. \emph{IEEE Std 1547-2018} e \emph{IEEE Std 1547.1-2020}.
+\bibitem{ul1741} UL. \emph{UL 1741, Inverters, Converters, Controllers and Interconnection System Equipment for Use With Distributed Energy Resources}, 3.\textsuperscript{a} ed., 2021 (Suplemento SB).
+\bibitem{iec62446} IEC. \emph{IEC 62446-1:2016+AMD1:2018}; \emph{IEC 61724-1:2021}; \emph{IEC 61215:2021}; \emph{IEC 61730:2023}; \emph{IEC 62852:2014}; \emph{IEC 61643-31:2018}.
+\bibitem{nfpa780} NFPA. \emph{NFPA 780, Standard for the Installation of Lightning Protection Systems}, ed. 2023; IEC 62305-2.
+\bibitem{planos} TEC, Oficina de Ingeniería. \emph{Planos as-built, Edificio Centro Académico de Alajuela}: A01--A13 (arquitectónicos), S01--S10 (estructurales), E01--E11 (eléctricos), M1--M04 (aire acondicionado), F01--F05 (incendios), X01--X02 (evacuación), T01--T06 (telecomunicaciones). Mayo de 2025.
+\bibitem{iceTarRED} ICE. \emph{Tarifas aplicables a recursos energéticos distribuidos, julio 2026} (cargos de interconexión RE-0031-IE-2026, Alcance N.\textsuperscript{o} 93 a La Gaceta N.\textsuperscript{o} 137, 23 de julio de 2026; tarifa de acceso, compraventa de excedentes y TDER). Actualizado el 29 de julio de 2026; los montos están sujetos a IVA. \url{https://grupoice.com/wps/wcm/connect/6b387ffa-400d-41dd-85aa-76e36daffb20/TARIFAS+APLICABLES+A+RECURSOS+ENERGETICOS+DISTRIBUIDOS+JULIO+2026.pdf}. Enlazado desde \url{https://grupoice.com/wps/portal/ICE/electricidad/proyectos-energeticos/generacion-distribuida/}
+\bibitem{icePliego} ICE. \emph{Tarifas eléctricas del sistema de distribución, enero a diciembre de 2026} (rige para los consumos del 1 de enero al 31 de diciembre de 2026; los precios no incluyen impuesto de ventas ni otros cargos). Alcance N.\textsuperscript{o} 161, La Gaceta N.\textsuperscript{o} 236, 16 de diciembre de 2025. \url{https://www.iceelectricidad.com/wps/portal/electricidad/interes/tarifas-electricas}
+\bibitem{aresepArchivo} ARESEP. ``ARESEP archiva expediente de ajuste tarifario en electricidad'', comunicado del 26 de agosto de 2026 (Bol. 39-2026). \url{https://aresep.go.cr/noticias/aresep-archiva-expediente-de-ajuste-tarifario-en-electricidad/}
+\bibitem{muniAlajuela} Municipalidad de Alajuela. \emph{Reglamento de Obras de Mantenimiento Menor} (arts. 4 y 6) y \emph{Reglamento de Construcciones de la Municipalidad de Alajuela}, 2024 (arts. 571--579). \url{https://www.munialajuela.go.cr/municipalidad/transparencia-institucional/reglamentos}; trámites: \url{https://www.munialajuela.go.cr/tramites/construccion}
+\bibitem{meic2024} MEIC. \emph{Texto de decreto ejecutivo relativo al Código Eléctrico de Costa Rica}, noviembre de 2024 (no se confirmó su publicación en La Gaceta). \url{https://www.meic.go.cr/wp-content/uploads/2024/11/Cod-Electricofinal.pdf}
+\bibitem{gmaps} Google. \emph{Google Maps, vista satelital del Centro Académico de Alajuela (Sede Central UTN, Villa Bonita)}. Imágenes \textcopyright{} 2026 Google; captura del 3 de octubre de 2026.
+\bibitem{s5manual} S-5!. \emph{PVKIT 2.0 Solar Manual}, 2024 (incluye la tabla de cargas UL 2703 por modelo de módulo, sección 2.3, y las orejetas de tierra, sección 2.4.1). Archivo \texttt{pvkit-2-0-solar-manual.pdf}.
+\bibitem{s5inst} S-5!. \emph{PVKIT 2.0 Installation Instructions}, 2025. Archivo \texttt{pvkit-2-0-installation.pdf}.
+\bibitem{froniusMX} Fronius. \emph{Fronius Symo Advanced, hoja de datos (México)}, y \emph{Symo Advanced 20.0-3 480, datos técnicos}. \url{https://www.fronius.com/es-mx/mexico/energia-solar/instaladores-y-socios/datos-tecnicos/todos-los-productos/inversor/fronius-symo-advanced/symo-advanced-20-0-3-480}
+\bibitem{s5compat} S-5!. \emph{S-5-U and S-5-U Mini standing seam clamps}, documentación técnica y tablas de carga. \url{https://www.s-5.com/}
+\bibitem{minaeMarco} MINAE, Dirección de Energía. \emph{Marco legal sobre energía}. \url{https://energia.minae.go.cr/?page_id=1444}
+\bibitem{seBifacial} SolarEdge. \emph{Application Note: Compatibility of Bi-facial Modules with SolarEdge Power Optimizers}, versión 1.5, enero de 2022. \url{https://knowledge-center.solaredge.com/sites/kc/files/compatibility_of_bi_facial_modules_with_SE_optimizers.pdf}
+\bibitem{seMeter} SolarEdge. \emph{Energy Meter with Modbus Connection for North America}, manual de instalación. \url{https://knowledge-center.solaredge.com/sites/kc/files/se-energy-meter-with-modbus-connection-manual-na.pdf}
+\bibitem{seHU363RB} Schneider Electric. \emph{HU363RB, safety switch, heavy duty, non fusible, 100A, 3 pole, 600V AC/DC, NEMA 3R}, hoja de producto. \url{https://www.se.com/us/en/product/HU363RB/}
+\bibitem{seHDL} Schneider Electric. \emph{HDL36070, PowerPact H circuit breaker, 70~A, 3P, 600~V}, hoja de producto. \url{https://www.se.com/us/en/product/HDL36070/}
+\bibitem{iceIT} ICE. \emph{DC-03-IT-21-001, Condiciones técnicas para la interconexión de recursos distribuidos para autoconsumo}, versión 2, marzo de 2025 (apartados 5.4.7--5.4.15, 5.5.4, 5.7 y 5.8). \url{https://www.grupoice.com/wps/wcm/connect/8b578f58-24cb-49d5-9a87-9bdce923b819/DC-03-IT-21-001+Condiciones+t\%C3\%A9cnicas+para+interconectar+servicios+de+DER.pdf}
+\bibitem{iceContrato} ICE. \emph{Contrato de servicio de interconexión para recursos energéticos distribuidos (modalidad autoconsumo)}, archivo ``DC-03-FO-21-006 Contrato de Servicios de Interconexión Generación Distribuida V1''. \url{https://www.grupoice.com/wps/wcm/connect/ddc32345-573c-4158-b241-e8496e74cb77/DC-03-FO-21-006+Contrato+de+Servicios+de+Interconexi\%C3\%B3n+Generaci\%C3\%B3n+Distribuida+V1.pdf}
+\bibitem{cscr2010} CFIA. \emph{Código Sísmico de Costa Rica 2010} (revisión 2014), Tabla 4.1: clasificación de las edificaciones según su importancia (grupo C: edificaciones para actividades educativas con una capacidad mayor de 300 estudiantes). \url{https://iisee.kenken.go.jp/worldlist/12_CostaRica/CSCR2010-R14.pdf}
+\bibitem{seSunSpec} SolarEdge. \emph{SunSpec Logging in SolarEdge Inverters}, nota técnica (Modbus SunSpec sobre RS485 y TCP). \url{https://knowledge-center.solaredge.com/sites/kc/files/sunspec-implementation-technical-note.pdf}
+\bibitem{asce7} ASCE. \emph{ASCE/SEI 7-16, Minimum Design Loads and Associated Criteria for Buildings and Other Structures}, sección 29.4.4 (paneles solares paralelos a la cubierta). Reston, VA, 2017. Citada solo para indicar que sus factores $\gamma_E$ y $\gamma_a$ no se combinan con el procedimiento del CFIA.
+\bibitem{seQOB} Schneider Electric. \emph{QOB335 y QOB320, Square D QO bolt-on circuit breakers}, hojas de producto. \url{https://www.se.com/us/en/product/QOB335/}
+\end{thebibliography}
+
+% =====================================================================
+\appendix
+\section{Hojas de datos y referencias técnicas de los equipos}
+Los cálculos usan la versión indicada de cada ficha técnica. Las fichas se adjuntan como archivos separados en la carpeta \texttt{Datasheets/} de la entrega y también se pueden consultar en estos enlaces:
+\begin{itemize}
+\item Módulo Canadian Solar CS6W-580TB-AG, ficha V2.0C2 \cite{csDatasheet}.
+\item Optimizador SolarEdge S650B \cite{seOpt}.
+\item Inversor SolarEdge SE10KUS, 208~V \cite{seInv}.
+\item Sistema de montaje S-5! PVKIT 2.0: manual técnico (tabla de cargas UL 2703) e instrucciones de instalación \cite{s5manual,s5inst}.
+\item Alternativas descartadas: Jinko 72HL4-(V) \cite{jinkoV}; Fronius Symo Advanced: ficha técnica para México y manual de instalación \cite{fronius,fronius480,froniusMX,froniusUL3741}.
+\end{itemize}
+
+\textbf{Archivos incluidos en \texttt{Datasheets/}:}
+\begin{itemize}[itemsep=0pt]
+\item \nolinkurl{CS-Datasheet-TOPBiHiKu6_CS6W-TB-AG_v2.0C2_F68_D1_NA.pdf}
+\item \nolinkurl{solaredge-optimizer-S440-S500B-S650B-DS.pdf}
+\item \nolinkurl{se-three-phase-inverter-with-setapp-208-datasheet-na.pdf}
+\item \nolinkurl{pvkit-2-0-solar-manual.pdf}
+\item \nolinkurl{pvkit-2-0-installation.pdf}
+\item \nolinkurl{JKM580-605N-72HL4-(V)-F8-EN.pdf}
+\item \nolinkurl{SE_DS_Fronius_Symo_Advanced_ES_MX.pdf}
+\item \texttt{Fronius Symo Advanced - Installation.pdf}
+\end{itemize}
+
+Referencias técnicas de los demás equipos:
+\begin{itemize}
+\item Desconectador Square D HU363RB (UL 98, 100~A, 600~V, NEMA 3R) \cite{seHU363RB}.
+\item Interruptor PowerPact HDL36070 (UL 489) \cite{seHDL}.
+\item Interruptores QOB335 y QOB320 (UL 489, atornillables) \cite{seQOB}.
+\item Medidor SolarEdge \emph{Energy Meter with Modbus Connection} para Norteamérica \cite{seMeter}.
+\item Nota de aplicación de SolarEdge sobre módulos bifaciales con optimizadores \cite{seBifacial}.
+\end{itemize}
+El tablero NQ y el supresor SurgeLogic se especifican por familia (listados UL 67 y UL 1449); su ficha exacta depende de la configuración que arme el distribuidor.
+
+\section{Memoria de cálculo reproducible}
+Los cálculos de las secciones de energía, conductores, falla, rayo y viento se hicieron con programas en Python que se entregan junto al documento; cada uno guarda su resultado en un archivo \texttt{*\_out.txt}:
+\begin{itemize}
+\item \texttt{calc/energia.py}: modelo energético con pvlib.
+\item \texttt{calc/electrico.py}: conductores, protecciones, corriente de falla, interconexión, ocupación de canalizaciones, riesgo por rayo, cargas y viento.
+\item \texttt{calc/sensibilidad\_sitio.py}: sensibilidad de la producción a la orientación y a la altura de los árboles (Cuadro~\ref{tab:sensib_sitio}).
+\item \texttt{calc/economico.py}: flujo de caja, retorno, VAN y LCOE de la sección~\ref{sec:viabilidad}.
+\item \texttt{laminas/src/gen\_fv00.py}, \texttt{gen\_fv01.py} y \texttt{gen\_fv02.py}: generan las láminas FV-00 a FV-02 en TikZ a partir de las coordenadas medidas en los planos as-built (A01, A04, E01). FV-03 y FV-04 son archivos TikZ directos.
+\end{itemize}
+Cualquier supuesto de diseño (marcado con \supuesto{}) se puede cambiar en el encabezado del programa correspondiente para recalcular los resultados.
+
+\section{Trazabilidad con el enunciado del proyecto}
+\label{sec:trazabilidad}
+{\small
+\begin{longtable}{L{1.1cm}L{7.2cm}L{6.6cm}}
+\caption{Ubicación en el documento de cada requisito del enunciado.}\label{tab:trazabilidad}\\
+\toprule
+\textbf{Ítem} & \textbf{Requisito del enunciado} & \textbf{Dónde se atiende}\\
+\midrule\endfirsthead
+\toprule
+\textbf{Ítem} & \textbf{Requisito del enunciado} & \textbf{Dónde se atiende}\\
+\midrule\endhead
+1 & Ley 10086, reglamento y reformas & Sección 3.1; Cuadro~\ref{tab:vigencia}\\
+1 & Código Eléctrico: artículos de FV, DC, tierra, protecciones, conductores e interconexión & Sección 3.2 (RTCR 458 y Cuadro~\ref{tab:nec})\\
+1 & Normativa técnica y tarifaria de ARESEP & Sección 3.3\\
+1 & Procedimientos, formularios, estudios e inspecciones de la distribuidora & Secciones 3.4 y \ref{sec:tramites}\\
+1 & MINAE, ARESEP, CFIA, Bomberos, municipalidad y distribuidora & Cuadro~\ref{tab:instituciones}; secciones 3.5 y 3.6\\
+1 & Normas IEC, UL, IEEE y NFPA & Cuadro~\ref{tab:normasint}\\
+1 & Edición, vigencia y alcance & Cuadro~\ref{tab:vigencia}\\
+1 & Diferencias entre vivienda, cubierta industrial y terreno & Sección~\ref{sec:comparacion}; sección 11.2\\
+2 & Ubicación, provincia, cantón y distribuidora; imagen satelital & Cuadro~\ref{tab:sitio}; lámina FV-00; Fig.~\ref{fig:satelital}\\
+2 & Tipo de instalación y uso & Cuadro~\ref{tab:sitio}\\
+2 & Dimensiones, orientación, inclinación y áreas excluidas & Secciones 5.2 y 5.3; lámina FV-01\\
+2 & Sombras & Sección~\ref{sec:sombras}; Fig.~\ref{fig:satelital}; Cuadros~\ref{tab:perdidas} y \ref{tab:sensib_sitio}\\
+2 & Condiciones ambientales & Cuadro~\ref{tab:clima}\\
+2 & Techo, accesos, rutas de mantenimiento y seguridad & Secciones 5.3 y 5.4; láminas FV-01 y FV-02\\
+2 & Servicio eléctrico, medición y punto de interconexión & Sección~\ref{sec:existente}; láminas FV-00 y FV-03\\
+2 & Perfil de consumo y modalidad & Sección~\ref{sec:consumo}\\
+2 & Condiciones estructurales, municipales u operativas; limitación estructural declarada & Secciones 5.4 y 5.9\\
+3 & Módulos, inversores, estructura, conductores, protecciones, SPD, tierra, monitoreo, baterías y rotulación & Sección~\ref{sec:equipos}\\
+3 & Fabricante, modelo, función, datos eléctricos, certificaciones, ambiente, compatibilidad y justificación & Cuadros~\ref{tab:alternativas}, \ref{tab:modulo}, \ref{tab:inversor} y \ref{tab:compat}\\
+4 & Distribución, orientación e inclinación & Sección~\ref{sec:distribucion}; lámina FV-01\\
+4 & Separaciones, pasillos, accesos y retiros & Lámina FV-01 (NFPA 1, zonas de viento)\\
+4 & Ubicación de inversores, tableros, desconectadores y medidores & Sección 8.4; lámina FV-02\\
+4 & Configuración de strings & Cuadro~\ref{tab:strings}; lámina FV-01\\
+4 & Recorrido y protección del cableado & Sección 8.5; láminas FV-01 y FV-02\\
+4 & Puesta a tierra, equipotencialización y SPD & Sección 7.8; lámina FV-04\\
+4 & Punto de interconexión & Sección~\ref{sec:interconexion}; lámina FV-03\\
+4 & Medidas particulares del caso (impermeabilización, cargas, viento, corrosión) & Sección 8.8\\
+5 & Plano general con equipos & Láminas FV-00, FV-01 y FV-02\\
+5 & Diagrama completo con nomenclatura & Lámina FV-03; Cuadro~\ref{tab:strings}\\
+5 & Detalle de puesta a tierra y medios de desconexión & Lámina FV-04\\
+5 & Cuadro de equipos y BOM & Cuadros~\ref{tab:equipos} y \ref{tab:bom}\\
+5 & Especificaciones de cableado, canalización, conectores, estructura y señalización & Cuadros~\ref{tab:especificaciones} y \ref{tab:rotulos}\\
+5 & Cálculos: recurso, potencia, strings, conductores, protecciones, DC/AC, pérdidas y viento & Sección 10 y Anexo B\\
+6 & Análisis: justificación, comparación, ventajas, cumplimiento, trámites, riesgos y limitaciones & Sección 11\\
+6 (adicional) & Viabilidad técnica, normativa, estructural y económica & Sección~\ref{sec:viabilidad}\\
+7 & Conclusiones & Sección 13\\
+8 & Hojas de datos & Anexo A; carpeta \texttt{Datasheets/}\\
+2 y 8 & Fotografías del emplazamiento y de los equipos existentes & Anexo~\ref{sec:fotos}; sección 5.1\\
+8 & Prompts de IA íntegros & Anexo~\ref{sec:prompts}\\
+\bottomrule
+\end{longtable}}
+
+\section{Registro fotográfico del sitio}
+\label{sec:fotos}
+Fotografías tomadas por el grupo el 5 de octubre de 2026, entre las 11:08 y las 11:24, con un teléfono que registra la posición GPS y el rumbo de la cámara. De las 42 tomas se reproducen solo las que aportan información al diseño; las demás (repeticiones de las mismas fachadas y equipos ajenos al sistema FV, como los paneles de incendio, control de acceso y control de iluminación) se conservan en la carpeta de fotografías del proyecto. El rumbo indicado es hacia dónde apunta la cámara; la fachada fotografiada de frente mira en el sentido opuesto.
+
+\subsection*{Exterior: orientación, sombras y fachada de los inversores}
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7907_fachada_ene_ascensor_generador.jpg}
+\caption{Fachada de acceso (IMG\_7907; rumbo de la cámara de 228°, fachada orientada a unos 47°). Torre del ascensor (ejes 16--17, extremo bajo de la cubierta) y generador Kohler en cabina a la izquierda.}
+\label{fig:foto_este}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7914_fachada_oso_condensadoras.jpg}
+\caption{Fachada opuesta (IMG\_7914; rumbo de 56°, fachada orientada a unos 236°). Las condensadoras asoman sobre el borde de la cubierta: es el extremo alto (eje 01).}
+\label{fig:foto_oeste}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7910_fachada_nno_pendiente.jpg}
+\caption{Fachada larga del eje N (IMG\_7910; rumbo de 157°). Con la cámara hacia el SSE, el borde de la cubierta sube hacia la derecha (oeste): la cubierta cae hacia el ENE.}
+\label{fig:foto_norte}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7911_arbol_junto_edificio.jpg}
+\caption{Árbol junto al edificio (IMG\_7911; rumbo de 210°). La copa queda aproximadamente a la altura del alero, lo que respalda el escenario de árboles bajos del Cuadro~\ref{tab:sensib_sitio}.}
+\label{fig:foto_arbol}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7919_fachada_sur_registros.jpg}
+\caption{Fachada sur (IMG\_7919; rumbo de 28°, a lo largo del muro). Muro liso donde se proponen INV-1, INV-2, TFV e IFV (FV-02) y registros de la malla de tierra al pie.}
+\label{fig:foto_sur}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[height=8.2cm,keepaspectratio]{figuras/fotos/IMG_7920_fachada_sur_condensadora.jpg}
+\caption{Fachada sur, tramo siguiente (IMG\_7920; rumbo de 25°). Condensadoras de piso junto al muro: la ruta AC pasa por debajo de ellas a 0,20~m sobre la rasante (lámina FV-02).}
+\label{fig:foto_sur2}
+\end{minipage}
+\end{figure}
+
+\subsection*{Cuarto eléctrico: cadena de alimentación e interconexión}
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[width=\linewidth]{figuras/fotos/IMG_7939_ip_rotulo.jpg}
+\caption{Rótulo del interruptor principal del edificio (IMG\_7939): IP, 277/480~V, alimentado desde IP-Acometida TEC, 1\#4/0 (F) + 1\#1/0 (T). Alimenta al transformador.}
+\label{fig:foto_ip}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\includegraphics[width=\linewidth]{figuras/fotos/IMG_7937_ats_rotulo.jpg}
+\caption{Rótulos del ATS (IMG\_7937): Kohler KSS-ACTC-0400S, 400~A, 3F, 208~V, NEMA 3R, UL 1008, MPAC 1200; alimentado desde TX y la planta eléctrica con 2\,$\times$\,\#4/0 (F+N) + 2\,$\times$\,\#1/0 (T).}
+\label{fig:foto_ats}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.62\textheight,keepaspectratio]{figuras/fotos/IMG_7938_ts01_placa.jpg}
+\caption{Placa de TS-01, rotulado TX en sitio (IMG\_7938): Square D EXN112T3H, 112,5~kVA, 480$\Delta$--208Y/120~V, 135,3/312,3~A, \textbf{impedancia de 3,57\,\%}, listado UL. Dato usado en el cálculo de la corriente de falla disponible (memoria de cálculo, NEC 110.9).}
+\label{fig:foto_ts01}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.40\textwidth}\centering
+\includegraphics[width=\linewidth]{figuras/fotos/IMG_7934_tp_frente.jpg}
+\caption{Tablero principal TP (IMG\_7934), Square D. Interruptor principal en la parte inferior izquierda y espacios libres en la parte superior derecha.}
+\label{fig:foto_tp}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.56\textwidth}\centering
+\includegraphics[width=\linewidth]{figuras/fotos/IMG_7932_multimedidor.jpg}
+\caption{Caja ``Medidor de energía'' (IMG\_7932), alimentada desde TRU: multimedidor interno del edificio, no el medidor del ICE. Puede usarse para obtener el perfil de carga.}
+\label{fig:foto_med}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figuras/fotos/IMG_7935_tp_cuadro.jpg}
+\caption{Cuadro de circuitos del TP (IMG\_7935): Square D HCP32688, 208/120~V, barras de 800~A, 42 polos, principal LA36400 de 400~A, alimentado desde la transferencia automática; circuitos 1 y 3 y espacios 2 a 12 libres; prevista de 100~A/3P.}
+\label{fig:foto_tp_cuadro}
+\end{figure}
+
+\section{Registro de uso de inteligencia artificial}
+\label{sec:prompts}
+De acuerdo con el enunciado, los prompts empleados se incluyen a continuación de forma íntegra.
+
+\input{prompts_ia_grupo.tex}
+
+\end{document}
